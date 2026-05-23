@@ -1,0 +1,214 @@
+@charset "UTF-8";
+
+/* RESET */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+
+/* BODY */
+
+body{
+  min-height:100vh;
+
+  font-family:Arial, Helvetica, sans-serif;
+
+  background:linear-gradient(
+    135deg,
+    #1e1b4b,
+    #312e81,
+    #581c87
+  );
+
+  color:white;
+
+  padding:40px;
+}
+
+
+/* CONTAINER */
+
+.container{
+  max-width:1200px;
+  margin:auto;
+}
+
+
+/* TOP BAR */
+
+.top-bar{
+  margin-bottom:60px;
+}
+
+.top-bar h1{
+  font-size:42px;
+
+  background:linear-gradient(
+    to right,
+    #f9a8d4,
+    #c084fc
+  );
+
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  font-weight:bold;
+}
+
+
+/* HERO */
+
+.hero{
+  text-align:center;
+  margin-bottom:60px;
+}
+
+.hero h2{
+  font-size:55px;
+  margin-bottom:15px;
+}
+
+.hero p{
+  color:#e9d5ff;
+  font-size:18px;
+}
+
+
+/* GRID */
+
+.games-grid{
+  display:grid;
+
+  grid-template-columns:
+  repeat(auto-fit, minmax(250px, 1fr));
+
+  gap:25px;
+}
+
+
+/* CARD */
+
+.card{
+  background:rgba(255,255,255,0.08);
+
+  border:1px solid rgba(255,255,255,0.1);
+
+  backdrop-filter:blur(10px);
+
+  border-radius:24px;
+
+  padding:28px;
+
+  transition:0.3s;
+
+  cursor:pointer;
+
+  overflow:hidden;
+
+  position:relative;
+}
+
+
+/* CARD HOVER */
+
+.card:hover{
+  transform:translateY(-10px) scale(1.02);
+
+  border-color:#f0abfc;
+
+  box-shadow:
+  0 10px 30px rgba(236,72,153,0.25);
+}
+
+
+/* EMOJI */
+
+.emoji{
+  font-size:55px;
+  margin-bottom:20px;
+
+  transition:0.3s;
+}
+
+
+/* EMOJI HOVER */
+
+.card:hover .emoji{
+  transform:rotate(8deg) scale(1.2);
+}
+
+
+/* TITLE */
+
+.card h3{
+  font-size:24px;
+  margin-bottom:12px;
+}
+
+
+/* TEXT */
+
+.card p{
+  color:#f5d0fe;
+
+  line-height:1.6;
+
+  margin-bottom:20px;
+}
+
+
+/* BUTTON */
+
+.play-btn{
+  display:inline-block;
+
+  padding:11px 18px;
+
+  background:linear-gradient(
+    to right,
+    #f9a8d4,
+    #c084fc
+  );
+
+  color:#1e1b4b;
+
+  text-decoration:none;
+
+  font-weight:bold;
+
+  border-radius:12px;
+
+  transition:0.3s;
+}
+
+
+/* BUTTON HOVER */
+
+.play-btn:hover{
+  transform:scale(1.05);
+
+  box-shadow:
+  0 5px 20px rgba(244,114,182,0.4);
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  body{
+    padding:20px;
+  }
+
+  .top-bar h1{
+    font-size:32px;
+  }
+
+  .hero h2{
+    font-size:38px;
+  }
+
+}

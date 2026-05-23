@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Life In Weeks</title>
+
+<link rel="stylesheet" href="life-weeks.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Life In Weeks</h1>
+
+    <p class="subtitle">
+        Every square is one week of your life.
+    </p>
+
+    <div class="input-section">
+
+        <input type="number" id="ageInput" placeholder="Enter your age">
+
+        <button onclick="generateLife()">
+            Generate My Life
+        </button>
+
+    </div>
+
+    <div class="stats">
+
+        <div class="stat-box">
+            <h2 id="weeksLived">0</h2>
+            <p>Weeks Lived</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 id="weeksLeft">0</h2>
+            <p>Weeks Left</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 id="lifePercent">0%</h2>
+            <p>Life Completed</p>
+        </div>
+
+    </div>
+
+    <div id="lifeGrid"></div>
+
+</div>
+
+<script src="life-weeks.js"></script>
+
+</body>
+</html>

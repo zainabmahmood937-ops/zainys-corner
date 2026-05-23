@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dream Room Builder</title>
+
+<link rel="stylesheet" href="dream-room.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Dream Room Builder</h1>
+
+    <p class="subtitle">
+        Customize your dream room aesthetic.
+    </p>
+
+    <div class="controls">
+
+        <button onclick="setWallpaper('pink')">
+            Pink
+        </button>
+
+        <button onclick="setWallpaper('blue')">
+            Blue
+        </button>
+
+        <button onclick="setWallpaper('purple')">
+            Purple
+        </button>
+
+        <button onclick="setWallpaper('dark')">
+            Dark
+        </button>
+
+        <button onclick="addEffect('stars')">
+            Stars
+        </button>
+
+        <button onclick="addEffect('led')">
+            LED Strips
+        </button>
+
+        <button onclick="addEffect('grid')">
+            Grid
+        </button>
+
+        <button onclick="addEffect('clouds')">
+            Clouds
+        </button>
+
+        <button onclick="addEffect('hearts')">
+            Hearts
+        </button>
+
+        <button onclick="addEffect('moon')">
+            Moon Glow
+        </button>
+
+        <button onclick="resetRoom()">
+            Reset
+        </button>
+
+    </div>
+
+    <div class="room" id="room">
+
+        <div class="wallpaper" id="wallpaper"></div>
+
+        <div class="effects" id="effects"></div>
+
+        <div class="floor"></div>
+
+        <div class="bed"></div>
+
+        <div class="desk"></div>
+
+        <div class="monitor"></div>
+
+        <div class="chair"></div>
+
+        <div class="plant"></div>
+
+        <div class="window"></div>
+
+        <div class="lamp"></div>
+
+    </div>
+
+    <div class="message-box" id="messageBox">
+
+        Start customizing your room.
+
+    </div>
+
+</div>
+
+<script src="dream-room.js"></script>
+
+</body>
+</html>

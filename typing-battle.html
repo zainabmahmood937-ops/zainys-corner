@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Typing Battle</title>
+
+<link rel="stylesheet" href="typing-battle.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Typing Battle</h1>
+
+    <p class="subtitle">
+        Type the sentence as fast as possible.
+    </p>
+
+    <div class="game-box">
+
+        <div class="sentence-box" id="sentence">
+
+            Loading...
+
+        </div>
+
+        <textarea
+        id="inputBox"
+        placeholder="Start typing here..."
+        oninput="checkTyping()"></textarea>
+
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <h2 id="timer">60</h2>
+
+                <p>Seconds Left</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2 id="wpm">0</h2>
+
+                <p>Words Per Minute</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h2 id="accuracy">100%</h2>
+
+                <p>Accuracy</p>
+
+            </div>
+
+        </div>
+
+        <button id="finishButton"
+        onclick="finishGame()">
+
+            FINISHED TYPING
+
+        </button>
+
+        <div class="result-message"
+        id="resultMessage">
+
+            Finish the sentence then click the button.
+
+        </div>
+
+        <button onclick="startGame()">
+            Restart Game
+        </button>
+
+    </div>
+
+</div>
+
+<script src="typing-battle.js"></script>
+
+</body>
+</html>

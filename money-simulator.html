@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Money Simulator</title>
+
+<link rel="stylesheet" href="money-simulator.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Money Simulator</h1>
+
+    <p class="subtitle">
+        Discover how small savings grow over time.
+    </p>
+
+    <div class="inputs">
+
+        <input type="number" id="monthlyMoney" placeholder="Monthly Saving">
+
+        <input type="number" id="yearsMoney" placeholder="Years">
+
+        <button onclick="calculateMoney()">
+            Calculate
+        </button>
+
+    </div>
+
+    <div class="results">
+
+        <div class="result-card">
+            <h2 id="totalMoney">$0</h2>
+            <p>Total Saved</p>
+        </div>
+
+        <div class="result-card">
+            <h2 id="dailySaving">$0</h2>
+            <p>Saved Per Day</p>
+        </div>
+
+        <div class="result-card">
+            <h2 id="yearlySaving">$0</h2>
+            <p>Saved Per Year</p>
+        </div>
+
+    </div>
+
+    <div class="comparison-box" id="comparisonText">
+
+        Start calculating to see what you could afford.
+
+    </div>
+
+</div>
+
+<script src="money-simulator.js"></script>
+
+</body>
+</html>
