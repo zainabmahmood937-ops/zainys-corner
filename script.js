@@ -126,10 +126,10 @@ window.onload = function () {
             if(random < 0.35){
 
                 document.getElementById("message").innerText =
-                "🏆 Achievement Unlocked: you finished my coffee";
+                "ðŸ† Achievement Unlocked: you finished my coffee";
 
                 document.getElementById("coffee").innerText =
-                "🥤";
+                "ðŸ¥¤";
 
             }
 
@@ -142,10 +142,10 @@ window.onload = function () {
                 "hue-rotate(180deg)";
 
                 document.getElementById("message").innerText =
-                "🌈 RAINBOW COFFEE ACTIVATED";
+                "ðŸŒˆ RAINBOW COFFEE ACTIVATED";
 
                 document.getElementById("coffee").innerText =
-                "🌈";
+                "ðŸŒˆ";
 
             }
 
@@ -165,10 +165,10 @@ window.onload = function () {
                 });
 
                 document.getElementById("message").innerText =
-                "🎉 CONFETTI CHAOS";
+                "ðŸŽ‰ CONFETTI CHAOS";
 
                 document.getElementById("coffee").innerText =
-                "🥤";
+                "ðŸ¥¤";
 
             }
 
@@ -178,7 +178,7 @@ window.onload = function () {
             else if(random < 0.90){
 
                 document.getElementById("coffee").innerText =
-                "⭐";
+                "â­";
 
                 document.getElementById("message").innerText =
                 "THE COFFEE ASCENDED";
@@ -191,7 +191,7 @@ window.onload = function () {
             else if(random < 0.97){
 
                 document.getElementById("coffee").innerText =
-                "💥";
+                "ðŸ’¥";
 
                 document.getElementById("message").innerText =
                 "THE COFFEE EXPLODED";
@@ -207,10 +207,10 @@ window.onload = function () {
                 "rotate(180deg)";
 
                 document.getElementById("message").innerText =
-                "👁️ the coffee broke reality";
+                "ðŸ‘ï¸ the coffee broke reality";
 
                 document.getElementById("coffee").innerText =
-                "☕";
+                "â˜•";
 
             }
 
@@ -300,15 +300,15 @@ window.onload = function () {
 
     var dayMessages = [
 
-        "☀️ go have breakfast.",
+        "â˜€ï¸ go have breakfast.",
 
-        "📚 time to study mate.",
+        "ðŸ“š time to study mate.",
 
         "67",
 
-        "☕ i js had coffee but im so tired",
+        "â˜• i js had coffee but im so tired",
 
-        "🌤️ rise and shine lil bro.",
+        "ðŸŒ¤ï¸ rise and shine lil bro.",
 
         ":D"
 
@@ -319,17 +319,17 @@ window.onload = function () {
 
     var nightMessages = [
 
-        "🌙 bro go to sleep.",
+        "ðŸŒ™ bro go to sleep.",
 
-        "🦇 dude i get it you are batman.",
+        "ðŸ¦‡ dude i get it you are batman.",
 
-        "😭 shouldnt you be in bed rn?",
+        "ðŸ˜­ shouldnt you be in bed rn?",
 
-        "💤 sweet dreams after you put the device down",
+        "ðŸ’¤ sweet dreams after you put the device down",
 
         ">:)",
 
-        "🌌 the coffee sees all"
+        "ðŸŒŒ the coffee sees all"
 
     ];
 
