@@ -28,6 +28,8 @@ body{
   padding:40px;
 
   overflow-x:hidden;
+
+  transition:0.5s;
 }
 
 
@@ -130,6 +132,8 @@ body{
   overflow:hidden;
 
   position:relative;
+
+  transform-origin:center;
 }
 
 
@@ -413,8 +417,7 @@ body{
 
 .spin{
 
-  animation:spin 4s linear infinite;
-
+  animation:spin 2s linear infinite !important;
 }
 
 
@@ -423,13 +426,11 @@ body{
   from{
 
     transform:rotate(0deg);
-
   }
 
   to{
 
     transform:rotate(360deg);
-
   }
 
 }
@@ -440,7 +441,6 @@ body{
 .glitch{
 
   animation:glitch 0.2s infinite;
-
 }
 
 
@@ -449,31 +449,26 @@ body{
   0%{
 
     transform:translate(2px, 2px);
-
   }
 
   25%{
 
     transform:translate(-2px, -2px);
-
   }
 
   50%{
 
     transform:translate(2px, -2px);
-
   }
 
   75%{
 
     transform:translate(-2px, 2px);
-
   }
 
   100%{
 
     transform:translate(0px, 0px);
-
   }
 
 }
