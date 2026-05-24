@@ -1,0 +1,307 @@
+@charset "UTF-8";
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+body{
+
+    font-family:Arial;
+
+    overflow-x:hidden;
+
+    color:white;
+
+    background:black;
+
+}
+
+
+/* PROGRESS BAR */
+
+#progressBar{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:0%;
+
+    height:8px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #c084fc,
+    #60a5fa
+    );
+
+    z-index:9999;
+
+}
+
+
+/* HERO */
+
+.hero{
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    background:
+    radial-gradient(circle,
+    #312e81,
+    #020617);
+
+}
+
+.hero h1{
+
+    font-size:80px;
+
+    margin-bottom:20px;
+
+}
+
+.hero p{
+
+    font-size:28px;
+
+    color:#ddd6fe;
+
+}
+
+
+/* ERAS */
+
+.era{
+
+    min-height:100vh;
+
+    padding:100px 10%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.era h2{
+
+    font-size:60px;
+
+    margin-bottom:40px;
+
+}
+
+
+/* FACTS */
+
+.facts{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(260px,1fr));
+
+    gap:25px;
+
+}
+
+.fact{
+
+    background:
+    rgba(255,255,255,0.08);
+
+    padding:25px;
+
+    border-radius:20px;
+
+    font-size:22px;
+
+    line-height:1.5;
+
+    backdrop-filter:blur(10px);
+
+    transition:0.3s;
+
+}
+
+.fact:hover{
+
+    transform:
+    translateY(-10px)
+    scale(1.03);
+
+}
+
+.funny{
+
+    border:2px solid #f472b6;
+
+}
+
+
+/* ERA COLORS */
+
+.prehistoric{
+
+    background:
+    linear-gradient(
+    180deg,
+    #14532d,
+    #052e16
+    );
+
+}
+
+.ancient{
+
+    background:
+    linear-gradient(
+    180deg,
+    #78350f,
+    #451a03
+    );
+
+}
+
+.medieval{
+
+    background:
+    linear-gradient(
+    180deg,
+    #374151,
+    #111827
+    );
+
+}
+
+.explorers{
+
+    background:
+    linear-gradient(
+    180deg,
+    #0f172a,
+    #1e3a8a
+    );
+
+}
+
+.industrial{
+
+    background:
+    linear-gradient(
+    180deg,
+    #3f3f46,
+    #18181b
+    );
+
+}
+
+.wars{
+
+    background:
+    linear-gradient(
+    180deg,
+    #3f3f46,
+    #111827
+    );
+
+}
+
+.modern{
+
+    background:
+    linear-gradient(
+    180deg,
+    #312e81,
+    #1e1b4b
+    );
+
+}
+
+.future{
+
+    background:
+    linear-gradient(
+    180deg,
+    #020617,
+    #0f172a
+    );
+
+}
+
+
+/* FLOATING COMMENT */
+
+#floatingComment{
+
+    position:fixed;
+
+    bottom:30px;
+    right:30px;
+
+    background:
+    rgba(0,0,0,0.5);
+
+    padding:18px 25px;
+
+    border-radius:18px;
+
+    font-size:20px;
+
+    backdrop-filter:blur(10px);
+
+    color:#f5d0fe;
+
+    z-index:999;
+
+}
+
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    .hero h1{
+
+        font-size:48px;
+
+    }
+
+    .hero p{
+
+        font-size:22px;
+
+    }
+
+    .era h2{
+
+        font-size:38px;
+
+    }
+
+    .fact{
+
+        font-size:18px;
+
+    }
+
+}

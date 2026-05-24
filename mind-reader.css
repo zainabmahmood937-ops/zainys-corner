@@ -1,0 +1,191 @@
+@charset "UTF-8";
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+body{
+
+    min-height:100vh;
+
+    font-family:Arial;
+
+    background:
+    radial-gradient(circle at top,
+    rgba(255,255,255,0.12),
+    transparent 30%),
+
+    linear-gradient(
+    135deg,
+    #020617,
+    #1e1b4b,
+    #581c87
+    );
+
+    color:white;
+
+    overflow-y:auto;
+
+}
+
+.container{
+
+    width:90%;
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding-top:40px;
+
+    padding-bottom:80px;
+
+    text-align:center;
+
+}
+
+h1{
+
+    font-size:60px;
+
+    margin-bottom:10px;
+
+}
+
+.subtitle{
+
+    font-size:22px;
+
+    color:#ddd6fe;
+
+    margin-bottom:40px;
+
+}
+
+.question{
+
+    background:rgba(255,255,255,0.08);
+
+    border:1px solid rgba(255,255,255,0.12);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    backdrop-filter:blur(10px);
+
+}
+
+.question p{
+
+    font-size:24px;
+
+    margin-bottom:20px;
+
+}
+
+.answer-btn{
+
+    padding:14px 28px;
+
+    margin:10px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#c084fc;
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.3s;
+
+}
+
+.answer-btn:hover{
+
+    transform:scale(1.07);
+
+    background:#a855f7;
+
+}
+
+.selected{
+
+    background:#34d399 !important;
+
+}
+
+#scanBtn{
+
+    margin-top:20px;
+
+    padding:18px 35px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#fb7185;
+
+    color:white;
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.3s;
+
+}
+
+#scanBtn:hover{
+
+    transform:scale(1.06);
+
+}
+
+#loadingText{
+
+    margin-top:40px;
+
+    font-size:34px;
+
+    color:#fde047;
+
+    min-height:50px;
+
+}
+
+#resultBox{
+
+    margin-top:40px;
+
+    background:rgba(255,255,255,0.08);
+
+    border-radius:25px;
+
+    padding:35px;
+
+    font-size:30px;
+
+    line-height:1.7;
+
+    display:none;
+
+    border:1px solid rgba(255,255,255,0.15);
+
+}

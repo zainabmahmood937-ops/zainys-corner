@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Rainy Window Simulator</title>
+
+<link rel="stylesheet"
+href="rainy-window.css">
+
+</head>
+
+<body>
+
+<!-- LIGHTNING -->
+
+<div id="lightning"></div>
+
+
+<!-- ROOM -->
+
+<div class="room">
+
+
+    <!-- POSTER -->
+
+    <div class="poster">
+
+        <h2>IT'S OKAY</h2>
+
+        <p>to slow down.</p>
+
+    </div>
+
+
+    <!-- WINDOW -->
+
+    <div class="window-frame">
+
+
+        <!-- SKY -->
+
+        <div class="sky"></div>
+
+
+        <!-- MOON -->
+
+        <div class="moon"></div>
+
+
+        <!-- STARS -->
+
+        <div class="stars"></div>
+
+
+        <!-- CITY -->
+
+        <div class="city"></div>
+
+
+        <!-- RAIN -->
+
+        <div id="rainContainer"></div>
+
+
+        <!-- FOG -->
+
+        <div class="fog"></div>
+
+
+        <!-- DRAW CANVAS -->
+
+        <canvas id="windowCanvas"></canvas>
+
+    </div>
+
+
+    <!-- DESK -->
+
+    <div class="desk">
+
+
+        <!-- CLOCK -->
+
+        <div class="clock-box">
+
+            <div id="clockTime">
+
+                12:00
+
+            </div>
+
+            <div id="clockDate">
+
+                Monday
+
+            </div>
+
+        </div>
+
+
+        <!-- PAPER -->
+
+        <div class="paper-area">
+
+            <canvas id="paperCanvas"></canvas>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="buttons">
+
+            
+
+            <button id="clearWindowBtn">
+
+                ✨ Clear Window
+
+            </button>
+
+            <button id="clearPaperBtn">
+
+                📝 Clear Paper
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="rainy-window.js"></script>
+
+</body>
+
+</html>

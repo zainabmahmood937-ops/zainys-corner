@@ -107,6 +107,20 @@ window.onload = function () {
 
             document.body.style.transform = "none";
 
+            document.body.classList.remove("glitch");
+
+
+            // RESET SPINNING CARDS
+
+            var allCards =
+            document.querySelectorAll(".card");
+
+            for(var i = 0; i < allCards.length; i++){
+
+                allCards[i].classList.remove("spin");
+
+            }
+
 
             // NORMAL CONFETTI
 
@@ -126,10 +140,10 @@ window.onload = function () {
             if(random < 0.35){
 
                 document.getElementById("message").innerText =
-                "ðŸ† Achievement Unlocked: you finished my coffee";
+                "🏆 Achievement Unlocked: you finished my coffee";
 
                 document.getElementById("coffee").innerText =
-                "ðŸ¥¤";
+                "🥤";
 
             }
 
@@ -142,10 +156,10 @@ window.onload = function () {
                 "hue-rotate(180deg)";
 
                 document.getElementById("message").innerText =
-                "ðŸŒˆ RAINBOW COFFEE ACTIVATED";
+                "🌈 RAINBOW COFFEE ACTIVATED";
 
                 document.getElementById("coffee").innerText =
-                "ðŸŒˆ";
+                "🌈";
 
             }
 
@@ -165,10 +179,10 @@ window.onload = function () {
                 });
 
                 document.getElementById("message").innerText =
-                "ðŸŽ‰ CONFETTI CHAOS";
+                "🎉 CONFETTI CHAOS";
 
                 document.getElementById("coffee").innerText =
-                "ðŸ¥¤";
+                "🥤";
 
             }
 
@@ -178,7 +192,7 @@ window.onload = function () {
             else if(random < 0.90){
 
                 document.getElementById("coffee").innerText =
-                "â­";
+                "⭐";
 
                 document.getElementById("message").innerText =
                 "THE COFFEE ASCENDED";
@@ -191,7 +205,7 @@ window.onload = function () {
             else if(random < 0.97){
 
                 document.getElementById("coffee").innerText =
-                "ðŸ’¥";
+                "💥";
 
                 document.getElementById("message").innerText =
                 "THE COFFEE EXPLODED";
@@ -207,10 +221,10 @@ window.onload = function () {
                 "rotate(180deg)";
 
                 document.getElementById("message").innerText =
-                "ðŸ‘ï¸ the coffee broke reality";
+                "👁️ the coffee broke reality";
 
                 document.getElementById("coffee").innerText =
-                "â˜•";
+                "☕";
 
             }
 
@@ -300,15 +314,15 @@ window.onload = function () {
 
     var dayMessages = [
 
-        "â˜€ï¸ go have breakfast.",
+        "☀️ go have breakfast.",
 
-        "ðŸ“š time to study mate.",
+        "📚 time to study mate.",
 
         "67",
 
-        "â˜• i js had coffee but im so tired",
+        "☕ i js had coffee but im so tired",
 
-        "ðŸŒ¤ï¸ rise and shine lil bro.",
+        "🌤️ rise and shine lil bro.",
 
         ":D"
 
@@ -319,17 +333,17 @@ window.onload = function () {
 
     var nightMessages = [
 
-        "ðŸŒ™ bro go to sleep.",
+        "🌙 bro go to sleep.",
 
-        "ðŸ¦‡ dude i get it you are batman.",
+        "🦇 dude i get it you are batman.",
 
-        "ðŸ˜­ shouldnt you be in bed rn?",
+        "😭 shouldnt you be in bed rn?",
 
-        "ðŸ’¤ sweet dreams after you put the device down",
+        "💤 sweet dreams after you put the device down",
 
         ">:)",
 
-        "ðŸŒŒ the coffee sees all"
+        "🌌 the coffee sees all"
 
     ];
 
@@ -364,6 +378,158 @@ window.onload = function () {
         randomDayMessage;
 
     }
+
+
+// DO NOT PRESS BUTTON
+
+var chaosButton =
+document.getElementById("chaos-btn");
+
+if(chaosButton){
+
+    chaosButton.addEventListener("click", function(){
+
+        var randomChaos = Math.random();
+
+        var allCards =
+        document.querySelectorAll(".card");
+
+
+        // RESET EVERYTHING
+
+        document.body.classList.remove("glitch");
+
+        document.body.style.filter = "none";
+
+        document.body.style.transform = "none";
+
+
+        for(var i = 0; i < allCards.length; i++){
+
+            allCards[i].style.animation = "none";
+
+            allCards[i].style.transform = "";
+
+        }
+
+
+        // RAINBOW MODE
+
+        if(randomChaos < 0.15){
+
+            document.body.style.filter =
+            "hue-rotate(180deg)";
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "🌈 rainbow chaos activated";
+
+        }
+
+
+        // SPINNING CARDS
+
+        else if(randomChaos < 0.30){
+
+            for(var i = 0; i < allCards.length; i++){
+
+                allCards[i].style.animation =
+                "spin 2s linear infinite";
+
+            }
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "🌀 cards have lost control";
+
+        }
+
+
+        // FAKE ERROR
+
+        else if(randomChaos < 0.45){
+
+            alert(
+            "⚠️ ERROR 404: sanity not found");
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "💀 you pressed the forbidden button";
+
+        }
+
+
+        // UPSIDE DOWN
+
+        else if(randomChaos < 0.60){
+
+            document.body.style.transform =
+            "rotate(180deg)";
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "🙃 gravity has been reversed";
+
+        }
+
+
+        // GLITCH MODE
+
+        else if(randomChaos < 0.75){
+
+            document.body.classList.add("glitch");
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "👁️ reality corruption detected";
+
+        }
+
+
+        // X-RAY MODE
+
+        else if(randomChaos < 0.90){
+
+            document.body.style.filter =
+            "grayscale(100%) contrast(200%)";
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "☢️ x-ray vision enabled";
+
+        }
+
+
+        // TOTAL CHAOS
+
+        else{
+
+            document.body.style.filter =
+            "invert(1)";
+
+            document.body.style.transform =
+            "rotate(720deg)";
+
+            confetti({
+
+                particleCount: 800,
+
+                spread: 360
+
+            });
+
+            document.getElementById("chaos-message")
+            .innerText =
+            "💥 TOTAL WEBSITE COLLAPSE";
+
+        }
+
+    });
+
+}
+
+
+// CLOSE WINDOW.ONLOAD
 
 };
 
