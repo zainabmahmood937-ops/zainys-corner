@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Future Job Predictor</title>
+
+<link rel="stylesheet"
+href="future-job.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Future Job Predictor</h1>
+
+    <p class="subtitle">
+        Answer the questions and discover your future career.
+    </p>
+
+    <div class="quiz-box">
+
+        <div class="question">
+
+            <p>Pick your ideal weekend:</p>
+
+            <select id="q1">
+
+                <option>Gaming all day</option>
+                <option>Sleeping</option>
+                <option>Exploring outside</option>
+                <option>Watching movies</option>
+                <option>Learning random things</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="question">
+
+            <p>Choose a vibe:</p>
+
+            <select id="q2">
+
+                <option>Cyberpunk</option>
+                <option>Cozy</option>
+                <option>Dark academia</option>
+                <option>Space aesthetic</option>
+                <option>Minimalist</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="question">
+
+            <p>What annoys you most?</p>
+
+            <select id="q3">
+
+                <option>Slow internet</option>
+                <option>Loud people</option>
+                <option>Math homework</option>
+                <option>Waking up early</option>
+                <option>Bad WiFi</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="question">
+
+            <p>Pick a superpower:</p>
+
+            <select id="q4">
+
+                <option>Teleportation</option>
+                <option>Mind reading</option>
+                <option>Flying</option>
+                <option>Time travel</option>
+                <option>Invisibility</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="question">
+
+            <p>How online are you?</p>
+
+            <select id="q5">
+
+                <option>Barely online</option>
+                <option>Normal amount</option>
+                <option>Very online</option>
+                <option>Terminally online</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="question">
+
+            <p>Favorite late night activity?</p>
+
+            <select id="q6">
+
+                <option>Scrolling TikTok</option>
+                <option>Watching YouTube</option>
+                <option>Listening to music</option>
+                <option>Overthinking life</option>
+                <option>Gaming</option>
+
+            </select>
+
+        </div>
+
+
+        <button onclick="predictJob()">
+
+            Predict My Future Job
+
+        </button>
+
+
+        <div class="result-box" id="resultBox">
+
+            Your future career will appear here.
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="future-job.js"></script>
+
+</body>
+
+</html>

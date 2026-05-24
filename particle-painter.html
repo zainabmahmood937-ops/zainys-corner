@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Particle Painter</title>
+
+<link rel="stylesheet"
+href="particle-painter.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Particle Painter</h1>
+
+    <p class="subtitle">
+        Move your mouse and paint glowing particles across the galaxy.
+    </p>
+
+    <div class="controls">
+
+        <input type="color" id="colorPicker" value="#ff66cc">
+
+        <button id="rainbowBtn">Rainbow Mode</button>
+
+        <button id="gravityBtn">Gravity Mode</button>
+
+        <button id="clearBtn">Clear Canvas</button>
+
+        <button id="drawModeBtn">✏️ Draw Mode</button>
+
+    </div>
+
+    <canvas id="paintCanvas"></canvas>
+
+    <div id="message">
+        Start painting the galaxy.
+    </div>
+
+</div>
+
+<script src="particle-painter.js"></script>
+
+</body>
+
+</html>

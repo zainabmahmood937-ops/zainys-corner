@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Constellation Creator</title>
+
+<link rel="stylesheet"
+href="constellation.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Constellation Creator</h1>
+
+    <p class="subtitle">
+        Click anywhere in space to create glowing stars.
+    </p>
+
+    <div class="controls">
+
+        <input type="text"
+        id="constellationName"
+        placeholder="Name your constellation">
+
+        <button id="undoBtn">
+            Undo
+        </button>
+
+        <button id="clearBtn">
+            Clear Sky
+        </button>
+        
+        <button id="newConstellationBtn">
+    New Constellation
+</button>
+
+    </div>
+
+    <div id="space">
+
+        <canvas id="lines"></canvas>
+
+    </div>
+
+    <div id="message">
+
+        Your galaxy awaits.
+
+    </div>
+
+</div>
+
+<script src="constellation.js"></script>
+
+</body>
+
+</html>
