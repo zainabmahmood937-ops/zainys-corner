@@ -1,182 +1,373 @@
-function setWallpaper(style) {
+var wall =
+document.getElementById("wall");
 
-    var wallpaper =
-    document.getElementById("wallpaper");
+var room =
+document.getElementById("room");
+
+var ledStrip =
+document.getElementById("ledStrip");
+
+var rainContainer =
+document.getElementById("rain-container");
+
+var starsContainer =
+document.getElementById("stars-container");
+
+var plant =
+document.getElementById("plant");
+
+var cat =
+document.getElementById("cat");
+
+var poster1 =
+document.getElementById("poster1");
+
+var poster2 =
+document.getElementById("poster2");
+
+var monitor =
+document.getElementById("monitor");
+
+var messageBox =
+document.getElementById("messageBox");
+
+var roomMood =
+document.getElementById("roomMood");
+
+var ambientAudio =
+document.getElementById("ambientAudio");
+
+var brightnessSlider =
+document.getElementById("brightnessSlider");
 
 
-    if (style == "pink") {
+/* STATES */
 
-        wallpaper.style.background =
-        "#be185d";
+var rainEnabled = false;
+
+var starsEnabled = false;
+
+var musicEnabled = false;
+
+var ledsEnabled = false;
+
+
+/* THEMES */
+
+function setTheme(theme){
+
+    if(theme == "cozy"){
+
+        wall.style.background =
+        "linear-gradient(180deg,#312e81,#111827)";
+
+        roomMood.innerHTML =
+        "mood: cozy night";
 
     }
 
-    else if (style == "blue") {
 
-        wallpaper.style.background =
-        "#1d4ed8";
+    else if(theme == "pink"){
 
-    }
+        wall.style.background =
+        "linear-gradient(180deg,#831843,#be185d)";
 
-    else if (style == "purple") {
-
-        wallpaper.style.background =
-        "#581c87";
-
-    }
-
-    else {
-
-        wallpaper.style.background =
-        "#111827";
+        roomMood.innerHTML =
+        "mood: pink dream";
 
     }
 
 
-    document.getElementById("messageBox").innerHTML =
-    style + " wallpaper applied.";
+    else if(theme == "cyber"){
+
+        wall.style.background =
+        "linear-gradient(180deg,#0f172a,#1d4ed8)";
+
+        roomMood.innerHTML =
+        "mood: cyber city";
+
+    }
+
+
+    else if(theme == "dark"){
+
+        wall.style.background =
+        "linear-gradient(180deg,#09090b,#18181b)";
+
+        roomMood.innerHTML =
+        "mood: rainy midnight";
+
+    }
+
+
+    messageBox.innerHTML =
+    "theme changed successfully ✨";
 
 }
 
 
+/* LEDS */
 
-function addEffect(effect) {
+function toggleLights(){
 
-    var effects =
-    document.getElementById("effects");
+    ledsEnabled = !ledsEnabled;
 
 
-    if (effect == "stars") {
+    if(ledsEnabled){
 
-        for (var i = 0; i < 80; i++) {
+        ledStrip.style.opacity = "1";
+
+        messageBox.innerHTML =
+        "LED lights turned on";
+
+    }
+
+    else{
+
+        ledStrip.style.opacity = "0";
+
+        messageBox.innerHTML =
+        "LED lights turned off";
+
+    }
+
+}
+
+
+/* STARS */
+
+function toggleStars(){
+
+    starsEnabled = !starsEnabled;
+
+    starsContainer.innerHTML = "";
+
+
+    if(starsEnabled){
+
+        for(var i = 0; i < 80; i++){
 
             var star =
             document.createElement("div");
 
-            star.className =
-            "star";
+            star.classList.add("star");
 
             star.style.left =
             Math.random() * 100 + "%";
 
             star.style.top =
-            Math.random() * 100 + "%";
+            Math.random() * 60 + "%";
 
-            effects.appendChild(star);
+            star.style.animationDelay =
+            Math.random() * 3 + "s";
 
-        }
-
-    }
-
-
-    else if (effect == "led") {
-
-        var led =
-        document.createElement("div");
-
-        led.className =
-        "led";
-
-        led.style.top =
-        "0px";
-
-        effects.appendChild(led);
-
-    }
-
-
-    else if (effect == "grid") {
-
-        var grid =
-        document.createElement("div");
-
-        grid.className =
-        "grid";
-
-        effects.appendChild(grid);
-
-    }
-
-
-    else if (effect == "clouds") {
-
-        for (var j = 0; j < 5; j++) {
-
-            var cloud =
-            document.createElement("div");
-
-            cloud.className =
-            "cloud";
-
-            cloud.style.left =
-            Math.random() * 80 + "%";
-
-            cloud.style.top =
-            Math.random() * 40 + "%";
-
-            effects.appendChild(cloud);
+            starsContainer.appendChild(star);
 
         }
 
-    }
 
-
-    else if (effect == "hearts") {
-
-        for (var k = 0; k < 40; k++) {
-
-            var heart =
-            document.createElement("div");
-
-            heart.className =
-            "heart";
-
-            heart.innerHTML =
-            "♥";
-
-            heart.style.left =
-            Math.random() * 100 + "%";
-
-            heart.style.top =
-            Math.random() * 100 + "%";
-
-            effects.appendChild(heart);
-
-        }
+        messageBox.innerHTML =
+        "stars added to your room";
 
     }
 
+    else{
 
-    else if (effect == "moon") {
-
-        var moon =
-        document.createElement("div");
-
-        moon.className =
-        "moon";
-
-        effects.appendChild(moon);
+        messageBox.innerHTML =
+        "stars removed";
 
     }
-
-
-    document.getElementById("messageBox").innerHTML =
-    effect + " effect added.";
 
 }
 
 
+/* RAIN */
 
-function resetRoom() {
+function toggleRain(){
 
-    document.getElementById("effects").innerHTML =
-    "";
+    rainEnabled = !rainEnabled;
 
-    document.getElementById("wallpaper").style.background =
-    "#312e81";
+    rainContainer.innerHTML = "";
 
 
-    document.getElementById("messageBox").innerHTML =
-    "Room reset.";
+    if(rainEnabled){
+
+        for(var i = 0; i < 120; i++){
+
+            var rain =
+            document.createElement("div");
+
+            rain.classList.add("rain-drop");
+
+            rain.style.left =
+            Math.random() * 100 + "%";
+
+            rain.style.animationDuration =
+            0.5 + Math.random() + "s";
+
+            rain.style.opacity =
+            Math.random();
+
+            rainContainer.appendChild(rain);
+
+        }
+
+
+        messageBox.innerHTML =
+        "rain mode enabled";
+
+    }
+
+    else{
+
+        messageBox.innerHTML =
+        "rain mode disabled";
+
+    }
+
+}
+
+
+/* MUSIC */
+
+function toggleMusic(){
+
+    musicEnabled = !musicEnabled;
+
+
+    if(musicEnabled){
+
+        ambientAudio.volume = 0.3;
+
+        ambientAudio.play();
+
+        messageBox.innerHTML =
+        "ambient sound playing";
+
+    }
+
+    else{
+
+        ambientAudio.pause();
+
+        messageBox.innerHTML =
+        "ambient sound stopped";
+
+    }
+
+}
+
+
+/* PLANT */
+
+function togglePlant(){
+
+    plant.classList.toggle("hidden");
+
+}
+
+
+/* POSTERS */
+
+function togglePosters(){
+
+    poster1.classList.toggle("hidden");
+
+    poster2.classList.toggle("hidden");
+
+}
+
+
+/* PC */
+
+function togglePC(){
+
+    if(monitor.style.boxShadow){
+
+        monitor.style.boxShadow = "";
+
+        monitor.style.transform = "scale(1)";
+
+    }
+
+    else{
+
+        monitor.style.boxShadow =
+        "0 0 30px #3b82f6";
+
+        monitor.style.transform =
+        "scale(1.04)";
+
+    }
+
+}
+
+
+/* CAT */
+
+function toggleCat(){
+
+    cat.classList.toggle("hidden");
+
+}
+
+
+/* BRIGHTNESS */
+
+brightnessSlider.oninput = function(){
+
+    room.style.filter =
+    "brightness(" +
+    brightnessSlider.value +
+    "%)";
+
+};
+
+
+/* RANDOMIZER */
+
+function randomizeRoom(){
+
+    var themes =
+    ["cozy","pink","cyber","dark"];
+
+    var randomTheme =
+    themes[Math.floor(Math.random() * themes.length)];
+
+    setTheme(randomTheme);
+
+
+    if(Math.random() > 0.5){
+
+        toggleLights();
+
+    }
+
+
+    if(Math.random() > 0.5){
+
+        toggleStars();
+
+    }
+
+
+    if(Math.random() > 0.5){
+
+        toggleRain();
+
+    }
+
+
+    plant.classList.remove("hidden");
+
+    poster1.classList.remove("hidden");
+
+    poster2.classList.remove("hidden");
+
+    cat.classList.remove("hidden");
+
+
+    messageBox.innerHTML =
+    "random dream room generated ✨";
 
 }
