@@ -8,7 +8,9 @@
     <meta name="viewport"
     content="width=device-width, initial-scale=1.0">
 
-    <title>Procrastination Simulator</title>
+    <title>
+        Procrastination Simulator
+    </title>
 
     <link rel="stylesheet"
     href="procrastination.css">
@@ -17,139 +19,9 @@
 
 <body>
 
-
-    <!-- OVERLAY -->
-
-    <div id="blur-overlay"></div>
-
-
     <!-- RAIN -->
 
-    <div id="rain-container"></div>
-
-
-    <!-- DESKTOP -->
-
-    <div class="desktop-icons">
-
-        <div class="desktop-icon"
-        id="homework-icon">
-
-            📁
-
-            <span>Homework</span>
-
-        </div>
-
-
-        <div class="desktop-icon"
-        id="spotify-icon">
-
-            🎵
-
-            <span>Spotify</span>
-
-        </div>
-
-
-        <div class="desktop-icon"
-        id="games-icon">
-
-            🎮
-
-            <span>Games</span>
-
-        </div>
-
-
-        <div class="desktop-icon"
-        id="notes-icon">
-
-            📚
-
-            <span>Study Notes</span>
-
-        </div>
-
-    </div>
-
-
-    <!-- WINDOWS -->
-
-    <div class="window"
-    id="homework-window">
-
-        <div class="window-top">
-
-            Homework.docx
-
-        </div>
-
-        <div class="window-content">
-
-            <h2>Math Assignment</h2>
-
-            <p>
-                due tomorrow
-            </p>
-
-            <p>
-                not started
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="window"
-    id="games-window">
-
-        <div class="window-top">
-
-            Totally Not A Game.exe
-
-        </div>
-
-        <div class="window-content">
-
-            <h2>🎮 GAMING MODE</h2>
-
-            <p>
-                one match becomes five
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="window"
-    id="notes-window">
-
-        <div class="window-top">
-
-            Study Notes
-
-        </div>
-
-        <div class="window-content">
-
-            <p>
-                "focus"
-            </p>
-
-            <p>
-                "stop procrastinating"
-            </p>
-
-            <p>
-                "why am i opening youtube again"
-            </p>
-
-        </div>
-
-    </div>
+    <div id="rain"></div>
 
 
     <!-- TOP BAR -->
@@ -157,34 +29,23 @@
     <div class="top-bar">
 
         <div class="stat">
-
-            Tabs Open:
+            Tabs:
             <span id="tabs">1</span>
-
         </div>
 
-
         <div class="stat">
-
-            Videos Watched:
+            Videos:
             <span id="videos">0</span>
-
         </div>
 
-
         <div class="stat">
-
             Productivity:
             <span id="productivity">100</span>%
-
         </div>
 
-
         <div class="stat">
-
             Time:
             <span id="clock">11:47 PM</span>
-
         </div>
 
     </div>
@@ -204,7 +65,8 @@
     <div class="container">
 
         <h1>
-            PROCRASTINATION SIMULATOR
+            PROCRASTINATION
+            SIMULATOR
         </h1>
 
         <p class="subtitle">
@@ -224,104 +86,180 @@
     </div>
 
 
-    <!-- THOUGHTS -->
+    <!-- DESKTOP -->
 
-    <div id="thought"></div>
+    <div class="desktop">
 
+        <div class="icon"
+        id="notesIcon">
 
-    <!-- NOTIFICATIONS -->
+            📚
 
-    <div id="notification-area"></div>
+            <span>
+                Notes
+            </span>
 
-
-    <!-- POPUPS -->
-
-    <div id="chaosArea"></div>
-
-
-    <!-- SEARCHES -->
-
-    <div id="searches"></div>
+        </div>
 
 
-    <!-- DISCORD -->
+        <div class="icon"
+        id="gameIcon">
 
-    <div id="discord-messages"></div>
+            🎮
+
+            <span>
+                Games
+            </span>
+
+        </div>
 
 
-    <!-- FLOATING TABS -->
+        <div class="icon"
+        id="musicIcon">
 
-    <div id="floating-tabs"></div>
+            🎵
 
+            <span>
+                Music
+            </span>
 
-    <!-- SPOTIFY -->
-
-    <div id="spotify-player">
-
-        <p>
-            🎵 now playing
-        </p>
-
-        <h3 id="song-name">
-
-            lofi beats to avoid responsibilities to
-
-        </h3>
-
-        <button id="next-song">
-
-            Next Song
-
-        </button>
+        </div>
 
     </div>
 
 
+    <!-- NOTES WINDOW -->
+
+    <div class="window"
+    id="notesWindow">
+
+        <div class="window-top">
+
+            Study Notes
+
+        </div>
+
+        <div class="window-content">
+
+            <p>
+                Chapter 1:
+                unread.
+            </p>
+
+            <br>
+
+            <p>
+                Chapter 2:
+                also unread.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- GAME WINDOW -->
+
+    <div class="window"
+    id="gameWindow">
+
+        <div class="window-top">
+
+            Cookie Clicker
+
+        </div>
+
+        <div class="window-content">
+
+            <p>
+
+                Cookies:
+                <span id="cookieCount">0</span>
+
+            </p>
+
+            <br>
+
+            <button id="cookieBtn">
+
+                Click Cookie
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MUSIC WINDOW -->
+
+    <div class="window"
+    id="musicWindow">
+
+        <div class="window-top">
+
+            Fake Spotify
+
+        </div>
+
+        <div class="window-content">
+
+            <h3 id="songName">
+
+                lofi beats to avoid responsibilities to
+
+            </h3>
+
+            <br>
+
+            <button id="nextSong">
+
+                Next Song
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHAOS -->
+
+    <div id="chaosArea"></div>
+
+    <div id="notifications"></div>
+
+    <div id="thought"></div>
+
+
     <!-- VIRUS -->
 
-    <div id="virus-screen">
+    <div id="virus">
 
         <h1>
 
-            ⚠ SYSTEM OVERLOAD ⚠
+            SYSTEM OVERLOAD
 
         </h1>
-
-        <p>
-
-            too many tabs detected
-
-        </p>
 
     </div>
 
 
     <!-- ENDING -->
 
-    <div id="ending-screen">
+    <div id="ending">
 
-        <div class="sleep-content">
+        <h1>
 
-            <h1>
+            You Fell Asleep
 
-                You fell asleep.
+        </h1>
 
-            </h1>
+        <p>
 
-            <p>
+            Assignment due in 3 hours.
 
-                The assignment is due in 3 hours.
-
-            </p>
-
-            <p class="small-ending">
-
-                A faint clock ticks somewhere
-                in the darkness.
-
-            </p>
-
-        </div>
+        </p>
 
     </div>
 
@@ -330,21 +268,17 @@
 
     <div id="jumpscare">
 
-        <div class="jumpscare-face">
-
-            😵
-
-        </div>
+        😵
 
     </div>
 
 
     <!-- AUDIO -->
 
-    <audio id="notificationSound">
+    <audio id="notifSound">
 
         <source
-        src="https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3"
+        src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
         type="audio/mpeg">
 
     </audio>
@@ -353,20 +287,13 @@
     <audio id="glitchSound">
 
         <source
-        src="https://cdn.pixabay.com/audio/2022/03/10/audio_c6992f0f4b.mp3"
+        src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"
         type="audio/mpeg">
 
     </audio>
 
 
-    <audio id="clockSound" loop>
-
-        <source
-        src="https://cdn.pixabay.com/audio/2022/01/18/audio_d1718ab41e.mp3"
-        type="audio/mpeg">
-
-    </audio>
-
+    <!-- JAVASCRIPT -->
 
     <script src="procrastination.js"></script>
 

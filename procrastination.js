@@ -4,38 +4,11 @@ document.getElementById("startBtn");
 var chaosArea =
 document.getElementById("chaosArea");
 
-var notificationArea =
-document.getElementById("notification-area");
+var notifications =
+document.getElementById("notifications");
 
 var thought =
 document.getElementById("thought");
-
-var searches =
-document.getElementById("searches");
-
-var discordMessages =
-document.getElementById("discord-messages");
-
-var floatingTabs =
-document.getElementById("floating-tabs");
-
-var spotifyPlayer =
-document.getElementById("spotify-player");
-
-var virusScreen =
-document.getElementById("virus-screen");
-
-var endingScreen =
-document.getElementById("ending-screen");
-
-var jumpscare =
-document.getElementById("jumpscare");
-
-var sanityBar =
-document.getElementById("sanity-bar");
-
-var blurOverlay =
-document.getElementById("blur-overlay");
 
 var tabs =
 document.getElementById("tabs");
@@ -46,85 +19,118 @@ document.getElementById("videos");
 var productivity =
 document.getElementById("productivity");
 
-var clock =
-document.getElementById("clock");
+var sanityBar =
+document.getElementById("sanity-bar");
 
-var notificationSound =
-document.getElementById("notificationSound");
+var virus =
+document.getElementById("virus");
+
+var ending =
+document.getElementById("ending");
+
+var jumpscare =
+document.getElementById("jumpscare");
+
+var notifSound =
+document.getElementById("notifSound");
 
 var glitchSound =
 document.getElementById("glitchSound");
 
-var clockSound =
-document.getElementById("clockSound");
+var notesIcon =
+document.getElementById("notesIcon");
 
+var gameIcon =
+document.getElementById("gameIcon");
 
-/* WINDOWS */
-
-var homeworkWindow =
-document.getElementById("homework-window");
-
-var gamesWindow =
-document.getElementById("games-window");
+var musicIcon =
+document.getElementById("musicIcon");
 
 var notesWindow =
-document.getElementById("notes-window");
+document.getElementById("notesWindow");
 
+var gameWindow =
+document.getElementById("gameWindow");
 
-/* ICONS */
+var musicWindow =
+document.getElementById("musicWindow");
 
-var homeworkIcon =
-document.getElementById("homework-icon");
+var cookieBtn =
+document.getElementById("cookieBtn");
 
-var gamesIcon =
-document.getElementById("games-icon");
-
-var notesIcon =
-document.getElementById("notes-icon");
-
-var spotifyIcon =
-document.getElementById("spotify-icon");
-
-
-/* SPOTIFY */
+var cookieCount =
+document.getElementById("cookieCount");
 
 var nextSong =
-document.getElementById("next-song");
+document.getElementById("nextSong");
 
 var songName =
-document.getElementById("song-name");
+document.getElementById("songName");
+
+var clock =
+document.getElementById("clock");
 
 
 var songs = [
 
-    "lofi beats to avoid responsibilities to",
+    "lofi beats",
 
     "sad music at 3am",
 
-    "songs to fail assignments to",
+    "panic playlist",
 
-    "studying for 12 hours straight playlist",
+    "songs to fail exams to",
 
-    "minecraft music while panicking",
-
-    "doomed final exam mix"
+    "minecraft soundtrack"
 
 ];
 
 
-/* RANDOM IMAGES */
+var popupMessages = [
 
-var randomImages = [
+    "You opened YouTube.",
 
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400",
+    "You watched a conspiracy documentary.",
 
-    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=400",
+    "You checked TikTok.",
 
-    "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=400",
+    "You forgot what you were studying.",
 
-    "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=400",
+    "You opened another tab.",
 
-    "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=400"
+    "You watched cat videos.",
+
+    "You searched random shower thoughts."
+
+];
+
+
+var notificationTexts = [
+
+    "Your friend sent 27 reels.",
+
+    "FLASH SALE ENDS IN 2 MINUTES!",
+
+    "Mom: are you studying?",
+
+    "NEW VIDEO UPLOADED.",
+
+    "Discord missed call."
+
+];
+
+
+var thoughts = [
+
+    "What if penguins had knees?",
+
+    "One more video won’t hurt.",
+
+    "Maybe tomorrow.",
+
+    "I should fix my sleep schedule.",
+
+    "Do fish get thirsty?"
 
 ];
 
@@ -137,112 +143,9 @@ var productivityLevel = 100;
 
 var sanity = 100;
 
+var cookies = 0;
+
 var started = false;
-
-
-/* POPUPS */
-
-var messages = [
-
-    "You opened YouTube.",
-
-    "You checked TikTok.",
-
-    "You watched a 3 hour iceberg documentary.",
-
-    "You searched 'how to focus instantly'.",
-
-    "You suddenly needed to clean your room.",
-
-    "You opened Spotify.",
-
-    "You watched cat videos for 48 minutes.",
-
-    "You opened another tab.",
-
-    "You searched random shower thoughts.",
-
-    "You forgot what you were studying."
-
-];
-
-
-/* THOUGHTS */
-
-var thoughts = [
-
-    "What if penguins had knees?",
-
-    "One more video won’t hurt.",
-
-    "I should become famous.",
-
-    "Why am I like this?",
-
-    "Maybe tomorrow.",
-
-    "Do fish get thirsty?",
-
-    "I should fix my sleep schedule."
-
-];
-
-
-/* NOTIFICATIONS */
-
-var notifications = [
-
-    "Your friend sent 47 reels.",
-
-    "FLASH SALE ENDS IN 2 MINUTES!",
-
-    "Mom: are you studying?",
-
-    "Your battery is at 9%.",
-
-    "You spent 8 hours online today.",
-
-    "Someone liked your old post.",
-
-    "NEW VIDEO UPLOADED."
-
-];
-
-
-/* GOOGLE SEARCHES */
-
-var fakeSearches = [
-
-    "how to study in one night",
-
-    "how to stop procrastinating",
-
-    "why am i tired all the time",
-
-    "how rich is mrbeast",
-
-    "do successful people procrastinate",
-
-    "what happens if i dont sleep"
-
-];
-
-
-/* DISCORD */
-
-var discordTexts = [
-
-    "bro get online",
-
-    "u studying again 💀",
-
-    "JOIN VC NOW",
-
-    "we are playing minecraft",
-
-    "bro disappeared"
-
-];
 
 
 /* START */
@@ -260,9 +163,13 @@ startBtn.onclick = function(){
 };
 
 
-/* MAIN CHAOS */
+/* CHAOS */
 
 function startChaos(){
+
+    createRain();
+
+    updateClock();
 
     createPopup();
 
@@ -270,42 +177,66 @@ function startChaos(){
 
     showThought();
 
-    createSearch();
-
-    createDiscord();
-
-    createFloatingTab();
-
-    createRain();
-
     updateStats();
 
-    startSpotify();
 
-    startClock();
+    setInterval(createPopup, 700);
 
-    moveButton();
-
-    setupDesktop();
-
-    clockSound.volume = 0.15;
-
-    clockSound.play();
-
-
-    setInterval(createPopup, 500);
-
-    setInterval(createNotification, 2200);
+    setInterval(createNotification, 2500);
 
     setInterval(showThought, 3500);
 
-    setInterval(createSearch, 3000);
-
-    setInterval(createDiscord, 4000);
-
-    setInterval(createFloatingTab, 1200);
-
     setInterval(updateStats, 1800);
+
+}
+
+
+/* RAIN */
+
+function createRain(){
+
+    for(var i = 0; i < 120; i++){
+
+        var drop =
+        document.createElement("div");
+
+        drop.classList.add("drop");
+
+        drop.style.left =
+        Math.random() * window.innerWidth + "px";
+
+        drop.style.animationDuration =
+        0.5 + Math.random() + "s";
+
+        drop.style.opacity =
+        Math.random();
+
+        document
+        .getElementById("rain")
+        .appendChild(drop);
+
+    }
+
+}
+
+
+/* CLOCK */
+
+function updateClock(){
+
+    setInterval(function(){
+
+        var now = new Date();
+
+        clock.innerHTML =
+        now.toLocaleTimeString([], {
+
+            hour:'2-digit',
+            minute:'2-digit'
+
+        });
+
+    }, 1000);
 
 }
 
@@ -320,22 +251,32 @@ function createPopup(){
     popup.classList.add("popup");
 
     popup.innerHTML =
-    messages[Math.floor(Math.random() * messages.length)];
+    popupMessages[
+        Math.floor(
+            Math.random() *
+            popupMessages.length
+        )
+    ];
+
 
     popup.style.left =
-    Math.random() * (window.innerWidth - 320) + "px";
+    Math.random() *
+    (window.innerWidth - 300)
+    + "px";
+
 
     popup.style.top =
-    Math.random() * (window.innerHeight - 250) + "px";
+    Math.random() *
+    (window.innerHeight - 250)
+    + "px";
 
 
-    if(Math.random() > 0.4){
-
-        var randomImage =
-        randomImages[Math.floor(Math.random() * randomImages.length)];
+    if(Math.random() > 0.5){
 
         popup.innerHTML +=
-        "<br><br><img src='" + randomImage + "'>";
+        "<br><br><img src='https://picsum.photos/300/180?random=" +
+        Math.random() +
+        "'>";
 
     }
 
@@ -343,7 +284,7 @@ function createPopup(){
     chaosArea.appendChild(popup);
 
 
-    if(document.querySelectorAll(".popup").length > 45){
+    if(document.querySelectorAll(".popup").length > 40){
 
         chaosArea.removeChild(
             chaosArea.firstChild
@@ -364,14 +305,18 @@ function createNotification(){
     notification.classList.add("notification");
 
     notification.innerHTML =
-    notifications[Math.floor(Math.random() * notifications.length)];
+    notificationTexts[
+        Math.floor(
+            Math.random() *
+            notificationTexts.length
+        )
+    ];
 
-    notificationArea.appendChild(notification);
+    notifications.appendChild(notification);
 
+    notifSound.currentTime = 0;
 
-    notificationSound.currentTime = 0;
-
-    notificationSound.play();
+    notifSound.play();
 
 
     setTimeout(function(){
@@ -388,7 +333,12 @@ function createNotification(){
 function showThought(){
 
     thought.innerHTML =
-    thoughts[Math.floor(Math.random() * thoughts.length)];
+    thoughts[
+        Math.floor(
+            Math.random() *
+            thoughts.length
+        )
+    ];
 
     thought.style.opacity = "1";
 
@@ -402,127 +352,21 @@ function showThought(){
 }
 
 
-/* SEARCHES */
-
-function createSearch(){
-
-    var search =
-    document.createElement("div");
-
-    search.classList.add("search-box");
-
-    search.innerHTML =
-    "🔍 " +
-    fakeSearches[Math.floor(Math.random() * fakeSearches.length)];
-
-    searches.appendChild(search);
-
-
-    setTimeout(function(){
-
-        search.remove();
-
-    }, 6000);
-
-}
-
-
-/* DISCORD */
-
-function createDiscord(){
-
-    var discord =
-    document.createElement("div");
-
-    discord.classList.add("discord-msg");
-
-    discord.innerHTML =
-    "Discord: " +
-    discordTexts[Math.floor(Math.random() * discordTexts.length)];
-
-    discordMessages.appendChild(discord);
-
-
-    setTimeout(function(){
-
-        discord.remove();
-
-    }, 5000);
-
-}
-
-
-/* FLOATING TABS */
-
-function createFloatingTab(){
-
-    var tab =
-    document.createElement("div");
-
-    tab.classList.add("floating-tab");
-
-    tab.innerHTML =
-    "📄 random_tab_" +
-    Math.floor(Math.random() * 999);
-
-    tab.style.left =
-    Math.random() * window.innerWidth + "px";
-
-    tab.style.animationDuration =
-    4 + Math.random() * 4 + "s";
-
-    floatingTabs.appendChild(tab);
-
-
-    setTimeout(function(){
-
-        tab.remove();
-
-    }, 10000);
-
-}
-
-
-/* RAIN */
-
-function createRain(){
-
-    for(var i = 0; i < 120; i++){
-
-        var drop =
-        document.createElement("div");
-
-        drop.classList.add("rain-drop");
-
-        drop.style.left =
-        Math.random() * window.innerWidth + "px";
-
-        drop.style.animationDuration =
-        0.4 + Math.random() + "s";
-
-        drop.style.opacity =
-        Math.random();
-
-        document
-        .getElementById("rain-container")
-        .appendChild(drop);
-
-    }
-
-}
-
-
 /* STATS */
 
 function updateStats(){
 
-    tabCount += Math.floor(Math.random() * 12);
+    tabCount +=
+    Math.floor(Math.random() * 8);
 
-    videoCount += Math.floor(Math.random() * 6);
+    videoCount +=
+    Math.floor(Math.random() * 5);
 
-    productivityLevel -= Math.floor(Math.random() * 12);
+    productivityLevel -=
+    Math.floor(Math.random() * 6);
 
-    sanity -= Math.floor(Math.random() * 8);
+    sanity -=
+    Math.floor(Math.random() * 5);
 
 
     if(productivityLevel < 0){
@@ -545,39 +389,41 @@ function updateStats(){
 
     productivity.innerHTML = productivityLevel;
 
-    sanityBar.style.width = sanity + "%";
+    sanityBar.style.width =
+    sanity + "%";
 
 
     if(sanity < 70){
 
-        sanityBar.style.background = "yellow";
+        sanityBar.style.background =
+        "yellow";
 
     }
 
 
     if(sanity < 40){
 
-        sanityBar.style.background = "orange";
-
-        blurOverlay.classList.add("blur-active");
+        sanityBar.style.background =
+        "orange";
 
     }
 
 
     if(sanity < 20){
 
-        sanityBar.style.background = "red";
+        sanityBar.style.background =
+        "red";
 
-        document.body.classList.add("shake");
+        document.body.classList.add(
+            "shake"
+        );
 
-        startVirusMode();
+        virusMode();
 
     }
 
 
     if(sanity < 10){
-
-        document.body.classList.add("three-am");
 
         jumpscareNow();
 
@@ -586,98 +432,20 @@ function updateStats(){
 
     if(sanity <= 0){
 
-        endingScreen.style.opacity = "1";
+        ending.style.opacity = "1";
 
-        endingScreen.style.pointerEvents = "all";
+        ending.style.pointerEvents = "all";
 
     }
 
 }
 
 
-/* BUTTON ESCAPES */
+/* VIRUS */
 
-function moveButton(){
+function virusMode(){
 
-    document.addEventListener("mousemove", function(e){
-
-        var rect =
-        startBtn.getBoundingClientRect();
-
-        var distanceX =
-        e.clientX - rect.left;
-
-        var distanceY =
-        e.clientY - rect.top;
-
-
-        if(distanceX < 150 &&
-           distanceY < 80 &&
-           sanity < 60){
-
-            startBtn.style.position = "absolute";
-
-            startBtn.style.left =
-            Math.random() * (window.innerWidth - 200) + "px";
-
-            startBtn.style.top =
-            Math.random() * (window.innerHeight - 100) + "px";
-
-        }
-
-    });
-
-}
-
-
-/* SPOTIFY */
-
-function startSpotify(){
-
-    spotifyPlayer.style.opacity = "1";
-
-}
-
-
-nextSong.onclick = function(){
-
-    var randomSong =
-    songs[Math.floor(Math.random() * songs.length)];
-
-    songName.innerHTML =
-    randomSong;
-
-};
-
-
-/* CLOCK */
-
-function startClock(){
-
-    setInterval(function(){
-
-        var now =
-        new Date();
-
-        clock.innerHTML =
-        now.toLocaleTimeString([], {
-
-            hour:'2-digit',
-
-            minute:'2-digit'
-
-        });
-
-    }, 1000);
-
-}
-
-
-/* VIRUS MODE */
-
-function startVirusMode(){
-
-    virusScreen.style.opacity = "1";
+    virus.style.opacity = "1";
 
     glitchSound.currentTime = 0;
 
@@ -686,9 +454,9 @@ function startVirusMode(){
 
     setTimeout(function(){
 
-        virusScreen.style.opacity = "0";
+        virus.style.opacity = "0";
 
-    }, 1800);
+    }, 800);
 
 }
 
@@ -708,40 +476,54 @@ function jumpscareNow(){
 
         jumpscare.style.opacity = "0";
 
-    }, 250);
+    }, 150);
 
 }
 
 
-/* DESKTOP ICONS */
+/* WINDOWS */
 
-function setupDesktop(){
+notesIcon.onclick = function(){
 
-    homeworkIcon.onclick = function(){
+    notesWindow.style.display = "block";
 
-        homeworkWindow.style.display = "block";
+};
 
-    };
+gameIcon.onclick = function(){
 
+    gameWindow.style.display = "block";
 
-    gamesIcon.onclick = function(){
+};
 
-        gamesWindow.style.display = "block";
+musicIcon.onclick = function(){
 
-    };
+    musicWindow.style.display = "block";
 
-
-    notesIcon.onclick = function(){
-
-        notesWindow.style.display = "block";
-
-    };
+};
 
 
-    spotifyIcon.onclick = function(){
+/* COOKIE CLICKER */
 
-        spotifyPlayer.style.opacity = "1";
+cookieBtn.onclick = function(){
 
-    };
+    cookies++;
 
-}
+    cookieCount.innerHTML = cookies;
+
+};
+
+
+/* SONG BUTTON */
+
+nextSong.onclick = function(){
+
+    songName.innerHTML =
+
+    songs[
+        Math.floor(
+            Math.random() *
+            songs.length
+        )
+    ];
+
+};
