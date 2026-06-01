@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Room Builder ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --cream:#faf7f2;
+  --warm:#f5ede0;
+  --peach:#f0d5b8;
+  --blush:#e8c4a8;
+  --brown:#8b5e3c;
+  --dark:#2d1f14;
+  --muted:#9b8070;
+  --green:#6b8f71;
+  --sky:#7eb8d4;
+  --lavender:#b8a9d4;
+  --gold:#d4a843;
+  --rose:#c97a8a;
+  --teal:#5a9e9e;
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--cream);
+  color:var(--dark);
+  min-height:100vh;
+  cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='%23d4a843' opacity='0.8'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+/* HEADER */
+.header{
+  text-align:center;
+  padding:3rem 2rem 2rem;
+  position:relative;
+}
+.header-tag{
+  display:inline-block;
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+  border:1px solid var(--peach);
+  padding:4px 14px;
+  border-radius:99px;
+  margin-bottom:1rem;
+}
+.header h1{
+  font-family:'Fraunces',serif;
+  font-size:clamp(2.8rem,7vw,5.5rem);
+  font-weight:300;
+  line-height:1;
+  color:var(--dark);
+  margin-bottom:0.75rem;
+}
+.header h1 em{
+  color:var(--brown);
+  font-style:italic;
+}
+.header-sub{
+  color:var(--muted);
+  font-size:15px;
+  max-width:400px;
+  margin:0 auto 2rem;
+}
+.floating-stars{
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.fstar{
+  position:absolute;
+  font-size:1.2rem;
+  animation:floatStar 6s ease-in-out infinite;
+  opacity:0.6;
+}
+@keyframes floatStar{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-12px) rotate(15deg)}
+}
+
+/* MAIN LAYOUT */
+.main{
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:0;
+  min-height:80vh;
+  max-width:1200px;
+  margin:0 auto;
+  border:1px solid var(--peach);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 8px 60px rgba(139,94,60,0.12);
+}
+
+/* SIDEBAR */
+.sidebar{
+  background:var(--warm);
+  border-right:1px solid var(--peach);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.sidebar-tabs{
+  display:flex;
+  overflow-x:auto;
+  border-bottom:1px solid var(--peach);
+  scrollbar-width:none;
+}
+.sidebar-tabs::-webkit-scrollbar{display:none}
+.stab{
+  flex-shrink:0;
+  padding:10px 14px;
+  font-size:18px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all 0.2s;
+  position:relative;
+}
+.stab:hover{background:var(--peach)}
+.stab.active{border-bottom-color:var(--brown);background:var(--cream)}
+.stab-tooltip{
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--dark);
+  color:var(--cream);
+  font-size:10px;
+  letter-spacing:0.08em;
+  padding:4px 10px;
+  border-radius:6px;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.2s;
+  font-family:'Instrument Sans',sans-serif;
+  text-transform:uppercase;
+}
+.stab:hover .stab-tooltip{opacity:1}
+
+.sidebar-panel{display:none;flex-direction:column;overflow:hidden;flex:1}
+.sidebar-panel.active{display:flex}
+.panel-title{
+  font-family:'Fraunces',serif;
+  font-size:1.1rem;
+  font-weight:400;
+  padding:1rem 1.25rem 0.5rem;
+  color:var(--brown);
+  border-bottom:1px solid var(--peach);
+}
+.panel-scroll{overflow-y:auto;flex:1;padding:1rem 1.25rem;scrollbar-width:thin;scrollbar-color:var(--peach) transparent}
+
+/* OPTION ITEMS */
+.opt-section{margin-bottom:1.5rem}
+.opt-section-label{
+  font-size:10px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:0.6rem;
+}
+.opt-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+.opt-btn{
+  aspect-ratio:1;
+  background:var(--cream);
+  border:1.5px solid var(--peach);
+  border-radius:12px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  transition:all 0.18s;
+  padding:6px 4px;
+  font-size:1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+.opt-btn:hover{
+  border-color:var(--brown);
+  transform:scale(1.04);
+  box-shadow:0 3px 12px rgba(139,94,60,0.15);
+}
+.opt-btn.selected{
+  border-color:var(--brown);
+  background:var(--peach);
+  box-shadow:0 0 0 2px var(--brown);
+}
+.opt-btn::after{
+  content:'✓';
+  position:absolute;
+  top:3px;right:5px;
+  font-size:9px;
+  color:var(--brown);
+  opacity:0;
+  transition:opacity 0.15s;
+  font-family:'Instrument Sans',sans-serif;
+}
+.opt-btn.selected::after{opacity:1}
+.opt-label{
+  font-size:9px;
+  letter-spacing:0.04em;
+  color:var(--muted);
+  text-align:center;
+  line-height:1.2;
+}
+
+/* COLOR SWATCHES */
+.color-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  margin-bottom:1rem;
+}
+.color-swatch{
+  aspect-ratio:1;
+  border-radius:8px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:all 0.15s;
+  position:relative;
+}
+.color-swatch:hover{transform:scale(1.1)}
+.color-swatch.selected{border-color:var(--dark);box-shadow:0 0 0 2px white inset}
+
+/* SLIDERS */
+.slider-row{
+  margin-bottom:1rem;
+}
+.slider-row label{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:5px;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+}
+.slider-row input[type=range]{
+  width:100%;
+  -webkit-appearance:none;
+  height:4px;
+  border-radius:2px;
+  background:var(--peach);
+  outline:none;
+}
+.slider-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:var(--brown);
+  cursor:pointer;
+  border:2px solid var(--cream);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* TOGGLE */
+.toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--peach);
+  font-size:12px;
+  color:var(--dark);
+}
+.toggle-row:last-child{border-bottom:none}
+.toggle{
+  width:36px;height:20px;
+  background:var(--peach);
+  border-radius:10px;
+  cursor:pointer;
+  position:relative;
+  transition:background 0.2s;
+  border:none;
+  flex-shrink:0;
+}
+.toggle.on{background:var(--brown)}
+.toggle::after{
+  content:'';
+  position:absolute;
+  top:3px;left:3px;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:white;
+  transition:left 0.2s;
+}
+.toggle.on::after{left:19px}
+
+/* ROOM CANVAS */
+.room-canvas{
+  position:relative;
+  background:var(--cream);
+  overflow:hidden;
+  min-height:500px;
+  display:flex;
+  align-items:stretch;
+}
+
+.room-scene{
+  position:relative;
+  flex:1;
+  overflow:hidden;
+  transition:background 0.6s;
+}
+
+/* ROOM WALLS */
+.room-walls{
+  position:absolute;
+  inset:0;
+  transition:all 0.5s;
+}
+.wall-back{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:55%;
+  transition:background 0.5s;
+}
+.wall-floor{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:45%;
+  transition:background 0.5s;
+}
+.wall-left{
+  position:absolute;
+  top:0;left:0;
+  width:60px;height:55%;
+  background:rgba(0,0,0,0.06);
+  transform:skewY(30deg);
+  transform-origin:bottom left;
+}
+.wall-right{
+  position:absolute;
+  top:0;right:0;
+  width:60px;height:55%;
+  background:rgba(0,0,0,0.04);
+  transform:skewY(-30deg);
+  transform-origin:bottom right;
+}
+
+/* WALLPAPER PATTERNS */
+.pattern-none{}
+.pattern-stripes .wall-back{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.15) 0px,rgba(255,255,255,0.15) 4px,transparent 4px,transparent 28px)!important}
+.pattern-dots .wall-back{background-image:radial-gradient(circle,rgba(255,255,255,0.3) 2px,transparent 2px)!important;background-size:20px 20px!important}
+.pattern-grid .wall-back{background-image:linear-gradient(rgba(255,255,255,0.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.12) 1px,transparent 1px)!important;background-size:30px 30px!important}
+.pattern-flowers .wall-back::after{content:'❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀ ❀';position:absolute;inset:0;font-size:18px;opacity:0.12;display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px;padding:12px;pointer-events:none;word-break:break-all;letter-spacing:12px;line-height:2}
+
+/* ITEMS IN ROOM */
+.room-items{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.room-item{
+  position:absolute;
+  font-size:3rem;
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  animation:itemDrop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  pointer-events:all;
+  cursor:grab;
+  user-select:none;
+  line-height:1;
+}
+.room-item:active{cursor:grabbing}
+@keyframes itemDrop{
+  0%{opacity:0;transform:scale(0.3) translateY(-40px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+.room-item:hover{
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,0.25));
+  transform:scale(1.08) translateY(-3px)!important;
+}
+
+/* WINDOW */
+.room-window{
+  position:absolute;
+  top:8%;left:50%;
+  transform:translateX(-50%);
+  width:130px;height:100px;
+  border:3px solid rgba(255,255,255,0.5);
+  border-radius:4px 4px 0 0;
+  background:linear-gradient(160deg,#c8e8f8 0%,#a8d4f0 50%,#f0e8c8 100%);
+  box-shadow:inset 0 0 20px rgba(255,255,255,0.3);
+  transition:all 0.5s;
+  overflow:hidden;
+}
+.window-light{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.4) 0%,transparent 60%);
+}
+.window-frame-h{
+  position:absolute;
+  top:50%;left:0;right:0;
+  height:2px;background:rgba(255,255,255,0.5);
+  transform:translateY(-50%);
+}
+.window-frame-v{
+  position:absolute;
+  left:50%;top:0;bottom:0;
+  width:2px;background:rgba(255,255,255,0.5);
+  transform:translateX(-50%);
+}
+.window-night{background:linear-gradient(160deg,#1a1a3e 0%,#0d0d2b 50%,#2a1a3e 100%)!important}
+.window-night .stars-bg{display:block!important}
+.stars-bg{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:radial-gradient(1px 1px at 20% 30%,white,transparent),
+             radial-gradient(1px 1px at 60% 20%,white,transparent),
+             radial-gradient(1px 1px at 80% 60%,white,transparent),
+             radial-gradient(1px 1px at 40% 70%,white,transparent),
+             radial-gradient(2px 2px at 70% 40%,white,transparent);
+}
+
+/* AMBIENT LIGHTING */
+.room-light{
+  position:absolute;
+  top:-30%;left:50%;
+  transform:translateX(-50%);
+  width:300px;height:300px;
+  border-radius:50%;
+  pointer-events:none;
+  transition:all 0.5s;
+  mix-blend-mode:multiply;
+}
+
+/* MOOD BADGE */
+.mood-badge{
+  position:absolute;
+  bottom:16px;right:16px;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--peach);
+  border-radius:99px;
+  padding:6px 14px;
+  font-size:11px;
+  color:var(--brown);
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  transition:all 0.5s;
+  box-shadow:0 2px 12px rgba(139,94,60,0.1);
+}
+
+/* ROOM NAME */
+.room-name-wrap{
+  position:absolute;
+  top:12px;left:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.room-name{
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--peach);
+  border-radius:8px;
+  padding:4px 10px;
+  font-size:12px;
+  color:var(--brown);
+  font-family:'Fraunces',serif;
+  font-style:italic;
+}
+
+/* TOOLBAR */
+.room-toolbar{
+  position:absolute;
+  bottom:16px;left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+  background:rgba(255,255,255,0.9);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--peach);
+  border-radius:99px;
+  padding:8px 16px;
+  box-shadow:0 4px 20px rgba(139,94,60,0.12);
+}
+.tool-btn{
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:16px;
+  padding:6px 10px;
+  border-radius:99px;
+  transition:all 0.15s;
+  color:var(--muted);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.tool-btn:hover{background:var(--warm);color:var(--brown)}
+.tool-btn.danger:hover{background:#fde8e8;color:#c45}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:2rem;left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--dark);
+  color:var(--cream);
+  padding:10px 20px;
+  border-radius:99px;
+  font-size:13px;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  z-index:9999;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+  opacity:1;
+}
+
+/* SHARE MODAL */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:rgba(45,31,20,0.5);
+  backdrop-filter:blur(6px);
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s;
+}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{
+  background:var(--cream);
+  border:1px solid var(--peach);
+  border-radius:20px;
+  padding:2.5rem;
+  max-width:380px;
+  width:90%;
+  text-align:center;
+  transform:scale(0.9);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 20px 60px rgba(45,31,20,0.2);
+}
+.modal-overlay.show .modal{transform:scale(1)}
+.modal h3{
+  font-family:'Fraunces',serif;
+  font-size:1.6rem;
+  font-weight:300;
+  margin-bottom:0.5rem;
+  color:var(--dark);
+}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:1.5rem}
+.modal-big-emoji{font-size:3rem;margin-bottom:1rem}
+.modal-room-desc{
+  background:var(--warm);
+  border:1px solid var(--peach);
+  border-radius:12px;
+  padding:1rem;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:14px;
+  color:var(--brown);
+  margin-bottom:1.5rem;
+  line-height:1.6;
+}
+.modal-btns{display:flex;gap:8px;justify-content:center}
+.mbtn{
+  padding:10px 20px;
+  border-radius:99px;
+  font-size:12px;
+  font-family:'Instrument Sans',sans-serif;
+  letter-spacing:0.05em;
+  cursor:pointer;
+  border:1.5px solid var(--peach);
+  background:var(--warm);
+  color:var(--brown);
+  transition:all 0.15s;
+}
+.mbtn:hover{background:var(--brown);color:var(--cream);border-color:var(--brown)}
+.mbtn.primary{background:var(--brown);color:var(--cream);border-color:var(--brown)}
+.mbtn.primary:hover{background:var(--dark)}
+
+/* EASTER EGG POPUP */
+.egg-popup{
+  position:fixed;
+  top:2rem;right:2rem;
+  background:var(--gold);
+  color:var(--dark);
+  padding:12px 20px;
+  border-radius:12px;
+  font-size:13px;
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  z-index:9998;
+  transform:translateX(200px);
+  opacity:0;
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  max-width:240px;
+  box-shadow:0 4px 20px rgba(212,168,67,0.4);
+}
+.egg-popup.show{transform:translateX(0);opacity:1}
+.egg-popup-sub{font-weight:400;font-size:11px;margin-top:3px;opacity:0.8}
+
+/* MOOD LIGHTING OVERLAY */
+.mood-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  transition:all 0.6s;
+  mix-blend-mode:multiply;
+}
+
+/* COUNTER */
+.counter-strip{
+  display:flex;
+  gap:1px;
+  background:var(--peach);
+  border-top:1px solid var(--peach);
+}
+.counter-item{
+  flex:1;
+  background:var(--cream);
+  text-align:center;
+  padding:10px 4px;
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:0.05em;
+}
+.counter-item strong{
+  display:block;
+  font-size:1.1rem;
+  color:var(--brown);
+  font-family:'Fraunces',serif;
+  font-weight:400;
+}
+
+/* KONFETTI */
+.konfetto{
+  position:fixed;
+  width:8px;height:8px;
+  border-radius:2px;
+  pointer-events:none;
+  z-index:9997;
+  animation:konfettoFall 2.5s ease-in forwards;
+}
+@keyframes konfettoFall{
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .sidebar{border-right:none;border-bottom:1px solid var(--peach);max-height:280px}
+  .room-canvas{min-height:400px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="floating-stars" id="floatingStars"></div>
+  <div class="header-tag">✦ interactive experience</div>
+  <h1>Build your<br><em>Dream Room</em></h1>
+  <p class="header-sub">Pick everything. Make it yours. There are no rules here.</p>
+</div>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-tabs" id="sidebarTabs">
+      <button class="stab active" data-tab="walls" onclick="switchTab('walls',this)">🎨<div class="stab-tooltip">Walls</div></button>
+      <button class="stab" data-tab="floor" onclick="switchTab('floor',this)">🪵<div class="stab-tooltip">Floor</div></button>
+      <button class="stab" data-tab="furniture" onclick="switchTab('furniture',this)">🛋️<div class="stab-tooltip">Furniture</div></button>
+      <button class="stab" data-tab="decor" onclick="switchTab('decor',this)">🌿<div class="stab-tooltip">Decor</div></button>
+      <button class="stab" data-tab="lighting" onclick="switchTab('lighting',this)">💡<div class="stab-tooltip">Lighting</div></button>
+      <button class="stab" data-tab="vibe" onclick="switchTab('vibe',this)">✨<div class="stab-tooltip">Vibe</div></button>
+      <button class="stab" data-tab="secret" onclick="switchTab('secret',this)">🔒<div class="stab-tooltip">???</div></button>
+    </div>
+
+    <!-- WALLS PANEL -->
+    <div class="sidebar-panel active" id="panel-walls">
+      <div class="panel-title">Wall Color</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Color</div>
+          <div class="color-grid" id="wallColors"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Wallpaper pattern</div>
+          <div class="opt-grid">
+            <button class="opt-btn selected" onclick="setPattern('none',this)">🚫<span class="opt-label">None</span></button>
+            <button class="opt-btn" onclick="setPattern('stripes',this)">▥<span class="opt-label">Stripes</span></button>
+            <button class="opt-btn" onclick="setPattern('dots',this)">⠿<span class="opt-label">Dots</span></button>
+            <button class="opt-btn" onclick="setPattern('grid',this)">⊞<span class="opt-label">Grid</span></button>
+            <button class="opt-btn" onclick="setPattern('flowers',this)">❀<span class="opt-label">Floral</span></button>
+          </div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Wall art</div>
+          <div class="opt-grid" id="wallArtOptions"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOOR PANEL -->
+    <div class="sidebar-panel" id="panel-floor">
+      <div class="panel-title">Floor & Rug</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Floor type</div>
+          <div class="opt-grid" id="floorOptions"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Rug</div>
+          <div class="opt-grid" id="rugOptions"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FURNITURE PANEL -->
+    <div class="sidebar-panel" id="panel-furniture">
+      <div class="panel-title">Furniture</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Beds & Seating</div>
+          <div class="opt-grid" id="furnitureBed"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Tables & Storage</div>
+          <div class="opt-grid" id="furnitureTable"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Entertainment</div>
+          <div class="opt-grid" id="furnitureEnt"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECOR PANEL -->
+    <div class="sidebar-panel" id="panel-decor">
+      <div class="panel-title">Decor & Plants</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Plants</div>
+          <div class="opt-grid" id="decorPlants"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Objects</div>
+          <div class="opt-grid" id="decorObjects"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Pets 🐾</div>
+          <div class="opt-grid" id="decorPets"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHTING PANEL -->
+    <div class="sidebar-panel" id="panel-lighting">
+      <div class="panel-title">Lighting & Mood</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Time of day</div>
+          <div class="opt-grid" id="timeOfDay"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Light sources</div>
+          <div class="opt-grid" id="lightSources"></div>
+        </div>
+        <div class="slider-row">
+          <label>Brightness <span id="brightnessVal">80%</span></label>
+          <input type="range" min="20" max="100" value="80" oninput="setBrightness(this.value)">
+        </div>
+        <div class="slider-row">
+          <label>Warmth <span id="warmthVal">50%</span></label>
+          <input type="range" min="0" max="100" value="50" oninput="setWarmth(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- VIBE PANEL -->
+    <div class="sidebar-panel" id="panel-vibe">
+      <div class="panel-title">Vibe & Extras</div>
+      <div class="panel-scroll">
+        <div class="opt-section">
+          <div class="opt-section-label">Room vibe preset</div>
+          <div class="opt-grid" id="vibePresets"></div>
+        </div>
+        <div class="opt-section">
+          <div class="opt-section-label">Extras</div>
+          <div id="vibeToggles"></div>
+        </div>
+        <div class="slider-row">
+          <label>Cozy level <span id="cozyVal">✦✦✦</span></label>
+          <input type="range" min="1" max="5" value="3" oninput="setCozy(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- SECRET PANEL (easter egg) -->
+    <div class="sidebar-panel" id="panel-secret">
+      <div class="panel-title">🔐 Secret Stuff</div>
+      <div class="panel-scroll">
+        <div style="text-align:center;padding:1rem 0">
+          <div style="font-size:2rem;margin-bottom:0.5rem">🤫</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:1.5rem">You found the secret tab.<br>These are <em>extremely</em> important items.</div>
+        </div>
+        <div class="opt-grid" id="secretItems"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOM CANVAS -->
+  <div class="room-canvas">
+    <div class="room-scene" id="roomScene">
+      <div class="room-walls" id="roomWalls">
+        <div class="wall-back" id="wallBack"></div>
+        <div class="wall-floor" id="wallFloor"></div>
+        <div class="wall-left"></div>
+        <div class="wall-right"></div>
+      </div>
+      <div class="mood-overlay" id="moodOverlay"></div>
+      <div class="room-light" id="roomLight"></div>
+      <div class="room-window" id="roomWindow">
+        <div class="window-light"></div>
+        <div class="stars-bg"></div>
+        <div class="window-frame-h"></div>
+        <div class="window-frame-v"></div>
+      </div>
+      <div class="room-items" id="roomItems"></div>
+      <div class="mood-badge" id="moodBadge">cozy & calm ✦</div>
+      <div class="room-name-wrap">
+        <div class="room-name" id="roomNameDisplay">My Dream Room</div>
+      </div>
+      <div class="room-toolbar">
+        <button class="tool-btn" onclick="clearRoom()">🗑️ Clear</button>
+        <button class="tool-btn" onclick="randomizeRoom()">🎲 Surprise me</button>
+        <button class="tool-btn" onclick="openShare()">✨ Share vibe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ITEM COUNTER STRIP -->
+<div class="counter-strip" id="counterStrip">
+  <div class="counter-item"><strong id="cnt-items">0</strong>items</div>
+  <div class="counter-item"><strong id="cnt-plants">0</strong>plants</div>
+  <div class="counter-item"><strong id="cnt-cozy" style="color:var(--rose)">☆☆☆☆☆</strong>cozy</div>
+  <div class="counter-item"><strong id="cnt-vibe">—</strong>vibe</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- EGG POPUP -->
+<div class="egg-popup" id="eggPopup">
+  <div id="eggTitle">🥚 Easter Egg!</div>
+  <div class="egg-popup-sub" id="eggSub"></div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareModal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-big-emoji" id="modalEmoji">✨</div>
+    <h3>Your Dream Room</h3>
+    <p>Here's how the universe sees your space:</p>
+    <div class="modal-room-desc" id="modalDesc">Loading your vibe...</div>
+    <div class="modal-btns">
+      <button class="mbtn" onclick="closeShareModal()">Back to room</button>
+      <button class="mbtn primary" onclick="copyVibe()">Copy vibe ✦</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const WALL_COLORS = [
+  {color:'#f5ede0',name:'Linen'},
+  {color:'#e8d5c4',name:'Sand'},
+  {color:'#d4c5b5',name:'Mushroom'},
+  {color:'#c8d8b8',name:'Sage'},
+  {color:'#b8ccd8',name:'Mist'},
+  {color:'#d8c8e8',name:'Lavender'},
+  {color:'#e8c8c8',name:'Blush'},
+  {color:'#c8e0d8',name:'Seafoam'},
+  {color:'#e0d8c8',name:'Oat'},
+  {color:'#2d2420',name:'Midnight'},
+  {color:'#1a2a3a',name:'Navy'},
+  {color:'#1e2a1e',name:'Forest'},
+  {color:'#3a2840',name:'Plum'},
+  {color:'#f8f4ee',name:'White'},
+  {color:'#fff8e8',name:'Butter'},
+];
+
+const FLOOR_OPTS = [
+  {e:'🪵',l:'Oak'},
+  {e:'🟫',l:'Walnut'},
+  {e:'⬜',l:'White Oak'},
+  {e:'🔶',l:'Terracotta'},
+  {e:'⬛',l:'Slate'},
+  {e:'🟨',l:'Bamboo'},
+];
+
+const RUG_OPTS = [
+  {e:'⬜',l:'None'},
+  {e:'🟥',l:'Red'},
+  {e:'🟦',l:'Blue'},
+  {e:'🟩',l:'Green'},
+  {e:'🟫',l:'Boho'},
+  {e:'🌀',l:'Persian'},
+  {e:'⚡',l:'Funky'},
+  {e:'🌙',l:'Dark'},
+  {e:'🌸',l:'Pink'},
+];
+
+const WALL_ART = [
+  {e:'🖼️',l:'Painting'},
+  {e:'🪞',l:'Mirror'},
+  {e:'📷',l:'Photos'},
+  {e:'🗺️',l:'Map'},
+  {e:'🌙',l:'Moon art'},
+  {e:'🔆',l:'Neon sign'},
+];
+
+const FURNITURE_BED = [
+  {e:'🛏️',l:'Comfy bed'},
+  {e:'🛋️',l:'Sofa'},
+  {e:'🪑',l:'Chair'},
+  {e:'🪢',l:'Hammock'},
+  {e:'💺',l:'Bean bag'},
+  {e:'🛺',l:'Daybed'},
+];
+
+const FURNITURE_TABLE = [
+  {e:'🚪',l:'Wardrobe'},
+  {e:'📚',l:'Bookshelf'},
+  {e:'🗄️',l:'Dresser'},
+  {e:'🪞',l:'Vanity'},
+  {e:'🪣',l:'Side table'},
+  {e:'🗑️',l:'Desk'},
+];
+
+const FURNITURE_ENT = [
+  {e:'📺',l:'TV'},
+  {e:'🎮',l:'Gaming'},
+  {e:'🎵',l:'Speakers'},
+  {e:'🎹',l:'Piano'},
+  {e:'🎸',l:'Guitar'},
+  {e:'📽️',l:'Projector'},
+];
+
+const DECOR_PLANTS = [
+  {e:'🌿',l:'Pothos'},
+  {e:'🌵',l:'Cactus'},
+  {e:'🪴',l:'Monstera'},
+  {e:'🌸',l:'Orchid'},
+  {e:'🌺',l:'Hibiscus'},
+  {e:'🎋',l:'Bamboo'},
+  {e:'🌱',l:'Succulent'},
+  {e:'🍀',l:'Clover'},
+  {e:'🌳',l:'Ficus'},
+];
+
+const DECOR_OBJECTS = [
+  {e:'🕯️',l:'Candle'},
+  {e:'📖',l:'Books'},
+  {e:'☕',l:'Mug'},
+  {e:'🧸',l:'Plushie'},
+  {e:'🎀',l:'Ribbon'},
+  {e:'🪬',l:'Hamsa'},
+  {e:'🔮',l:'Crystal'},
+  {e:'🎭',l:'Mask'},
+  {e:'🧿',l:'Evil eye'},
+  {e:'🕰️',l:'Clock'},
+  {e:'🍵',l:'Tea set'},
+  {e:'🫙',l:'Jar'},
+];
+
+const DECOR_PETS = [
+  {e:'🐱',l:'Cat'},
+  {e:'🐶',l:'Dog'},
+  {e:'🐰',l:'Bunny'},
+  {e:'🐟',l:'Fish'},
+  {e:'🦜',l:'Parrot'},
+  {e:'🐹',l:'Hamster'},
+];
+
+const TIME_OF_DAY = [
+  {e:'🌅',l:'Dawn'},
+  {e:'☀️',l:'Day'},
+  {e:'🌇',l:'Dusk'},
+  {e:'🌙',l:'Night'},
+];
+
+const LIGHT_SOURCES = [
+  {e:'💡',l:'Lamp'},
+  {e:'🕯️',l:'Candles'},
+  {e:'🔆',l:'Fairy lights'},
+  {e:'🪔',l:'Lantern'},
+  {e:'🔦',l:'Spotlight'},
+];
+
+const VIBE_PRESETS = [
+  {e:'🌿',l:'Cottagecore',wall:'#c8d8b8',floor:'🪵',mood:'earthy & magical'},
+  {e:'🌙',l:'Dark academia',wall:'#2d2420',floor:'⬛',mood:'mysterious & wise'},
+  {e:'🌸',l:'Soft girl',wall:'#e8c8c8',floor:'🟨',mood:'dreamy & cute'},
+  {e:'🌊',l:'Beach',wall:'#b8ccd8',floor:'🔶',mood:'breezy & free'},
+  {e:'🏙️',l:'City loft',wall:'#3a3835',floor:'⬛',mood:'sleek & urban'},
+  {e:'🎨',l:'Artist studio',wall:'#f8f4ee',floor:'🪵',mood:'creative & inspired'},
+];
+
+const SECRET_ITEMS = [
+  {e:'🚀',l:'Rocket'},
+  {e:'🦕',l:'Dino'},
+  {e:'🌈',l:'Rainbow'},
+  {e:'🦄',l:'Unicorn'},
+  {e:'🛸',l:'UFO'},
+  {e:'🐉',l:'Dragon'},
+  {e:'🧙',l:'Wizard'},
+  {e:'🧜',l:'Mermaid'},
+  {e:'🦋',l:'Butterfly'},
+  {e:'🌋',l:'Volcano'},
+  {e:'🏰',l:'Castle'},
+  {e:'⚡',l:'Lightning'},
+];
+
+const VIBE_TOGGLES = [
+  {id:'rain',label:'☔ Rainy window'},
+  {id:'music',label:'🎵 Music playing'},
+  {id:'fireplace',label:'🔥 Fireplace'},
+  {id:'fairy',label:'✨ Fairy lights'},
+  {id:'aromatherapy',label:'🌸 Aromatherapy'},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  wallColor: '#f5ede0',
+  wallPattern: 'none',
+  floorType: '🪵',
+  mood: 'cozy & calm',
+  brightness: 80,
+  warmth: 50,
+  cozy: 3,
+  timeOfDay: 'day',
+  selectedItems: new Set(),
+  itemCount: 0,
+  plantCount: 0,
+  toggles: {},
+  eggCount: 0,
+  secretItemsAdded: new Set(),
+};
+
+const EGG_MESSAGES = [
+  ['🥚 Easter Egg #1', 'You found the secret tab!'],
+  ['🥚 Easter Egg #2', 'The dragon and unicorn are best friends.'],
+  ['🥚 Easter Egg #3', 'A wizard is never late.'],
+  ['🌈 Rainbow unlocked!', 'Your room just got 10x more magical.'],
+  ['🛸 Alien visitor!', 'They really like your taste in decor.'],
+  ['🦕 Dino approved!', '65 million years of interior expertise.'],
+];
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  buildFloatingStars();
+  buildWallColors();
+  buildOptions('wallArtOptions', WALL_ART, 'wall_art');
+  buildOptions('floorOptions', FLOOR_OPTS, 'floor', true);
+  buildOptions('rugOptions', RUG_OPTS, 'rug');
+  buildOptions('furnitureBed', FURNITURE_BED, 'item');
+  buildOptions('furnitureTable', FURNITURE_TABLE, 'item');
+  buildOptions('furnitureEnt', FURNITURE_ENT, 'item');
+  buildOptions('decorPlants', DECOR_PLANTS, 'plant');
+  buildOptions('decorObjects', DECOR_OBJECTS, 'item');
+  buildOptions('decorPets', DECOR_PETS, 'pet');
+  buildOptions('timeOfDay', TIME_OF_DAY, 'time', true);
+  buildOptions('lightSources', LIGHT_SOURCES, 'light');
+  buildVibePresets();
+  buildVibeToggles();
+  buildOptions('secretItems', SECRET_ITEMS, 'secret');
+  applyWallColor(state.wallColor);
+  updateCounters();
+};
+
+// ============================================================
+// BUILDERS
+// ============================================================
+function buildFloatingStars() {
+  const c = document.getElementById('floatingStars');
+  const items = ['✦','✧','⊹','∗','✺','⋆'];
+  for (let i=0;i<12;i++) {
+    const s = document.createElement('span');
+    s.className = 'fstar';
+    s.textContent = items[Math.floor(Math.random()*items.length)];
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = Math.random()*4+'s';
+    s.style.animationDuration = (4+Math.random()*4)+'s';
+    s.style.fontSize = (0.8+Math.random()*0.8)+'rem';
+    s.style.color = ['var(--gold)','var(--rose)','var(--lavender)','var(--teal)'][Math.floor(Math.random()*4)];
+    c.appendChild(s);
+  }
+}
+
+function buildWallColors() {
+  const c = document.getElementById('wallColors');
+  WALL_COLORS.forEach(w => {
+    const d = document.createElement('div');
+    d.className = 'color-swatch' + (w.color===state.wallColor?' selected':'');
+    d.style.background = w.color;
+    d.title = w.name;
+    d.onclick = () => {
+      document.querySelectorAll('#wallColors .color-swatch').forEach(s=>s.classList.remove('selected'));
+      d.classList.add('selected');
+      applyWallColor(w.color);
+      showToast('Wall: '+w.name);
+    };
+    c.appendChild(d);
+  });
+}
+
+function buildOptions(containerId, data, type, singleSelect=false) {
+  const c = document.getElementById(containerId);
+  if(!c) return;
+  data.forEach((item,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `${item.e}<span class="opt-label">${item.l}</span>`;
+    btn.onclick = () => handleOption(btn, item, type, containerId, singleSelect);
+    if (type==='time' && i===1) { btn.classList.add('selected'); }
+    c.appendChild(btn);
+  });
+}
+
+function handleOption(btn, item, type, containerId, singleSelect) {
+  if (singleSelect) {
+    document.querySelectorAll(`#${containerId} .opt-btn`).forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+  } else {
+    btn.classList.toggle('selected');
+  }
+
+  if (type === 'time') {
+    setTimeOfDay(item.l.toLowerCase());
+    return;
+  }
+  if (type === 'floor') {
+    state.floorType = item.e;
+    applyFloor(item.e, item.l);
+    return;
+  }
+  if (type === 'secret') {
+    const added = !state.secretItemsAdded.has(item.l);
+    if (added) {
+      state.secretItemsAdded.add(item.l);
+      spawnItem(item.e, item.l, true);
+      triggerEgg();
+      launchKonfetti();
+    } else {
+      state.secretItemsAdded.delete(item.l);
+      removeItem(item.l);
+    }
+    return;
+  }
+
+  const isOn = btn.classList.contains('selected');
+  if (isOn) {
+    spawnItem(item.e, item.l, type==='plant');
+    if(type==='plant') state.plantCount++;
+  } else {
+    removeItem(item.l);
+    if(type==='plant') state.plantCount = Math.max(0,state.plantCount-1);
+  }
+  updateCounters();
+}
+
+function buildVibePresets() {
+  const c = document.getElementById('vibePresets');
+  VIBE_PRESETS.forEach(v => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `${v.e}<span class="opt-label">${v.l}</span>`;
+    btn.onclick = () => applyVibe(v, btn);
+    c.appendChild(btn);
+  });
+}
+
+function buildVibeToggles() {
+  const c = document.getElementById('vibeToggles');
+  VIBE_TOGGLES.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'toggle-row';
+    row.innerHTML = `<span>${t.label}</span><button class="toggle" id="tog-${t.id}" onclick="toggle('${t.id}')"></button>`;
+    c.appendChild(row);
+  });
+}
+
+// ============================================================
+// ROOM FUNCTIONS
+// ============================================================
+function applyWallColor(color) {
+  state.wallColor = color;
+  document.getElementById('wallBack').style.background = color;
+  // derive floor color
+  updateMoodBadge();
+}
+
+function applyFloor(emoji, name) {
+  const floorColors = {
+    '🪵':'#c4956a','🟫':'#8b5e3c','⬜':'#e8e0d0','🔶':'#c4743a','⬛':'#3a3835','🟨':'#d4b84a'
+  };
+  document.getElementById('wallFloor').style.background = floorColors[emoji] || '#c4956a';
+  showToast('Floor: ' + name);
+}
+
+function setPattern(pattern, btn) {
+  document.querySelectorAll('[onclick^="setPattern"]').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const scene = document.getElementById('roomScene');
+  scene.className = scene.className.replace(/\bpattern-\w+/g,'');
+  scene.classList.add('pattern-'+pattern);
+  state.wallPattern = pattern;
+}
+
+function setTimeOfDay(t) {
+  state.timeOfDay = t;
+  const overlay = document.getElementById('moodOverlay');
+  const win = document.getElementById('roomWindow');
+  const light = document.getElementById('roomLight');
+  const configs = {
+    dawn:{overlay:'rgba(255,180,100,0.12)',win:false,light:'radial-gradient(ellipse,rgba(255,200,120,0.3),transparent 70%)'},
+    day:{overlay:'transparent',win:false,light:'radial-gradient(ellipse,rgba(255,240,200,0.2),transparent 70%)'},
+    dusk:{overlay:'rgba(255,100,60,0.15)',win:false,light:'radial-gradient(ellipse,rgba(255,140,60,0.35),transparent 70%)'},
+    night:{overlay:'rgba(20,20,60,0.35)',win:true,light:'radial-gradient(ellipse,rgba(100,100,200,0.15),transparent 70%)'},
+  };
+  const cfg = configs[t] || configs.day;
+  overlay.style.background = cfg.overlay;
+  if(cfg.win) win.classList.add('window-night'); else win.classList.remove('window-night');
+  light.style.background = cfg.light;
+  updateMoodBadge();
+}
+
+function setBrightness(v) {
+  state.brightness = v;
+  document.getElementById('brightnessVal').textContent = v+'%';
+  document.getElementById('roomScene').style.filter = `brightness(${v/100 * 1.2})`;
+}
+
+function setWarmth(v) {
+  state.warmth = v;
+  document.getElementById('warmthVal').textContent = v+'%';
+  const r = Math.floor(v * 0.8);
+  document.getElementById('moodOverlay').style.background =
+    `rgba(${200+r},${140+Math.floor(r*0.3)},${80},${v/800})`;
+}
+
+function setCozy(v) {
+  state.cozy = v;
+  const stars = ['☆☆☆☆☆','★☆☆☆☆','★★☆☆☆','★★★☆☆','★★★★☆','★★★★★'];
+  document.getElementById('cozyVal').textContent = stars[v];
+  document.getElementById('cnt-cozy').textContent = ['☆☆☆☆☆','✦☆☆☆☆','✦✦☆☆☆','✦✦✦☆☆','✦✦✦✦☆','✦✦✦✦✦'][v];
+  updateMoodBadge();
+}
+
+function applyVibe(v, btn) {
+  document.querySelectorAll('#vibePresets .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  // apply wall color
+  const sw = document.querySelectorAll('#wallColors .color-swatch');
+  sw.forEach(s=>s.classList.remove('selected'));
+  document.getElementById('wallBack').style.background = v.wall;
+  state.wallColor = v.wall;
+  state.mood = v.mood;
+  updateMoodBadge();
+  showToast('Vibe: '+v.l+' ✦');
+  launchKonfetti(v.e);
+}
+
+function toggle(id) {
+  const btn = document.getElementById('tog-'+id);
+  btn.classList.toggle('on');
+  state.toggles[id] = btn.classList.contains('on');
+  const msgs = {
+    rain:'🌧️ Pitter patter...',
+    music:'🎵 Playlist on shuffle!',
+    fireplace:'🔥 Crackling warmth added!',
+    fairy:'✨ Fairy lights on!',
+    aromatherapy:'🌸 Lavender & vanilla...',
+  };
+  showToast(msgs[id]||'Updated!');
+  if(id==='fireplace' && state.toggles[id]) {
+    spawnItem('🔥','Fireplace-flame',false,true);
+  } else if(id==='fireplace') {
+    removeItem('Fireplace-flame');
+  }
+  updateMoodBadge();
+}
+
+// ============================================================
+// ITEM SPAWNING (draggable)
+// ============================================================
+const itemPositions = {};
+
+function spawnItem(emoji, label, isPlant=false, fixed=false) {
+  const c = document.getElementById('roomItems');
+  if(document.getElementById('item-'+label)) return;
+
+  const el = document.createElement('div');
+  el.className = 'room-item';
+  el.id = 'item-'+label;
+  el.textContent = emoji;
+  el.title = label;
+
+  // smart positioning
+  const scene = document.getElementById('roomScene');
+  const sw = scene.offsetWidth || 600;
+  const sh = scene.offsetHeight || 500;
+
+  let x, y;
+  if(isPlant){
+    x = 5 + Math.random()*15;
+    y = 45 + Math.random()*30;
+  } else if(fixed) {
+    x = 3; y = 55;
+  } else {
+    x = 10 + Math.random()*70;
+    y = 40 + Math.random()*40;
+  }
+
+  el.style.left = x+'%';
+  el.style.top = y+'%';
+  el.style.fontSize = (2+Math.random()*1.5)+'rem';
+
+  makeDraggable(el);
+  c.appendChild(el);
+  state.itemCount++;
+  updateCounters();
+}
+
+function removeItem(label) {
+  const el = document.getElementById('item-'+label);
+  if(el){
+    el.style.animation = 'itemDrop 0.3s reverse forwards';
+    setTimeout(()=>el.remove(),300);
+    state.itemCount = Math.max(0,state.itemCount-1);
+    updateCounters();
+  }
+}
+
+function makeDraggable(el) {
+  let ox,oy,ix,iy;
+  let isDragging = false;
+
+  el.addEventListener('mousedown', e => {
+    isDragging = true;
+    const rect = el.parentElement.getBoundingClientRect();
+    ix = e.clientX - rect.left - (parseFloat(el.style.left)/100)*rect.width;
+    iy = e.clientY - rect.top - (parseFloat(el.style.top)/100)*rect.height;
+    el.style.zIndex = 100;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if(!isDragging) return;
+    const rect = el.parentElement.getBoundingClientRect();
+    let nx = ((e.clientX - rect.left - ix)/rect.width)*100;
+    let ny = ((e.clientY - rect.top - iy)/rect.height)*100;
+    nx = Math.max(0,Math.min(88,nx));
+    ny = Math.max(0,Math.min(80,ny));
+    el.style.left = nx+'%';
+    el.style.top = ny+'%';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if(isDragging){ isDragging=false; el.style.zIndex=''; }
+  });
+
+  // touch
+  el.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    const rect = el.parentElement.getBoundingClientRect();
+    ix = t.clientX - rect.left - (parseFloat(el.style.left)/100)*rect.width;
+    iy = t.clientY - rect.top - (parseFloat(el.style.top)/100)*rect.height;
+    isDragging = true;
+  },{passive:true});
+  document.addEventListener('touchmove', e => {
+    if(!isDragging) return;
+    const t = e.touches[0];
+    const rect = el.parentElement.getBoundingClientRect();
+    let nx = ((t.clientX - rect.left - ix)/rect.width)*100;
+    let ny = ((t.clientY - rect.top - iy)/rect.height)*100;
+    nx = Math.max(0,Math.min(88,nx));
+    ny = Math.max(0,Math.min(80,ny));
+    el.style.left = nx+'%';
+    el.style.top = ny+'%';
+  },{passive:true});
+  document.addEventListener('touchend', ()=>{ isDragging=false; });
+}
+
+// ============================================================
+// COUNTERS & MOOD
+// ============================================================
+function updateCounters() {
+  const items = document.querySelectorAll('.room-item').length;
+  const plants = document.querySelectorAll('[id^="item-"][title$="othos"],[id^="item-"][title="Cactus"],[id^="item-"][title="Monstera"],[id^="item-"][title="Orchid"],[id^="item-"][title="Hibiscus"],[id^="item-"][title="Bamboo"],[id^="item-"][title="Succulent"],[id^="item-"][title="Clover"],[id^="item-"][title="Ficus"]').length;
+  document.getElementById('cnt-items').textContent = items;
+  document.getElementById('cnt-plants').textContent = plants;
+  document.getElementById('cnt-vibe').textContent = state.mood;
+}
+
+function updateMoodBadge() {
+  const moods = [
+    [state.timeOfDay==='night','mysterious & dreamy ✦'],
+    [state.timeOfDay==='dusk','golden hour magic ✦'],
+    [state.timeOfDay==='dawn','soft morning light ✦'],
+    [state.toggles.fireplace,'warm & crackling ✦'],
+    [state.toggles.rain,'cozy & rainy ✦'],
+    [state.cozy>=4,'deeply cozy ✦'],
+    [state.toggles.fairy,'sparkly & magical ✦'],
+    [true, state.mood || 'cozy & calm ✦'],
+  ];
+  for(const [cond, label] of moods){
+    if(cond){ document.getElementById('moodBadge').textContent = label; break; }
+  }
+  document.getElementById('cnt-vibe').textContent = state.mood || 'cozy & calm';
+}
+
+// ============================================================
+// TOOLBAR ACTIONS
+// ============================================================
+function clearRoom() {
+  if(!confirm('Clear your whole room? 😢')) return;
+  document.getElementById('roomItems').innerHTML = '';
+  state.itemCount = 0; state.plantCount = 0;
+  // deselect all buttons
+  document.querySelectorAll('.opt-btn.selected').forEach(b=>b.classList.remove('selected'));
+  updateCounters();
+  showToast('Room cleared. Fresh start! ✦');
+}
+
+function randomizeRoom() {
+  clearRoomSilent();
+  // pick random vibe
+  const v = VIBE_PRESETS[Math.floor(Math.random()*VIBE_PRESETS.length)];
+  document.getElementById('wallBack').style.background = v.wall;
+  state.mood = v.mood;
+  // add random items
+  const pool = [...FURNITURE_BED,...FURNITURE_TABLE,...DECOR_PLANTS,...DECOR_OBJECTS];
+  const count = 5+Math.floor(Math.random()*6);
+  const picked = pool.sort(()=>Math.random()-0.5).slice(0,count);
+  picked.forEach(item => {
+    const isPlant = DECOR_PLANTS.includes(item);
+    spawnItem(item.e, item.l, isPlant);
+  });
+  updateMoodBadge();
+  showToast('Surprise room created! 🎲');
+  launchKonfetti('🎲');
+}
+
+function clearRoomSilent() {
+  document.getElementById('roomItems').innerHTML = '';
+  state.itemCount = 0; state.plantCount = 0;
+  document.querySelectorAll('.opt-btn.selected').forEach(b=>b.classList.remove('selected'));
+}
+
+function openShare() {
+  const items = [...document.querySelectorAll('.room-item')].map(i=>i.textContent).join(' ');
+  const descs = [
+    `A ${state.mood} space filled with ${items||'possibilities'}. The kind of room that feels like a warm hug.`,
+    `This room whispers "${state.mood}". It has ${document.querySelectorAll('.room-item').length} things that bring joy, and infinite potential.`,
+    `Somewhere between a ${state.mood} fantasy and reality. ${items||'Empty but full of soul.'}`,
+    `If this room were a song, it would be something slow and ${state.mood}. ${items} — all in perfect harmony.`,
+  ];
+  const emojis = ['🌙','✨','🌸','🏡','🌿','💫'];
+  document.getElementById('modalDesc').textContent = descs[Math.floor(Math.random()*descs.length)];
+  document.getElementById('modalEmoji').textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  document.getElementById('shareModal').classList.add('show');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('show');
+}
+
+function closeModal(e) {
+  if(e.target === document.getElementById('shareModal')) closeShareModal();
+}
+
+function copyVibe() {
+  const text = document.getElementById('modalDesc').textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('Vibe copied to clipboard! ✦')).catch(()=>showToast('Copied!'));
+  closeShareModal();
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab, btn) {
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sidebar-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if(tab==='secret') triggerEgg();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ============================================================
+// EASTER EGGS
+// ============================================================
+function triggerEgg() {
+  const idx = Math.min(state.eggCount, EGG_MESSAGES.length-1);
+  const [title, sub] = EGG_MESSAGES[idx];
+  state.eggCount++;
+  const pop = document.getElementById('eggPopup');
+  document.getElementById('eggTitle').textContent = title;
+  document.getElementById('eggSub').textContent = sub;
+  pop.classList.add('show');
+  setTimeout(()=>pop.classList.remove('show'),3500);
+}
+
+// Konami code easter egg
+const konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiIdx = 0;
+document.addEventListener('keydown', e => {
+  if(e.key === konamiCode[konamiIdx]) {
+    konamiIdx++;
+    if(konamiIdx === konamiCode.length) {
+      konamiIdx = 0;
+      launchKonfetti('🌈');
+      showToast('🎮 KONAMI CODE! Dream room unlocked! ✦');
+      // add all secret items
+      SECRET_ITEMS.forEach(item => {
+        if(!document.getElementById('item-'+item.l)) {
+          spawnItem(item.e, item.l, false);
+        }
+      });
+      document.getElementById('eggTitle').textContent = '🎮 KONAMI CODE!';
+      document.getElementById('eggSub').textContent = 'You unlocked everything!';
+      document.getElementById('eggPopup').classList.add('show');
+      setTimeout(()=>document.getElementById('eggPopup').classList.remove('show'),4000);
+    }
+  } else {
+    konamiIdx = 0;
+  }
+});
+
+// click window 5 times for easter egg
+let winClicks = 0;
+document.getElementById('roomWindow').addEventListener('click', () => {
+  winClicks++;
+  if(winClicks === 5) {
+    winClicks = 0;
+    showToast('🌠 You found a shooting star!');
+    document.getElementById('eggTitle').textContent = '🌠 Shooting Star!';
+    document.getElementById('eggSub').textContent = 'Make a wish...';
+    document.getElementById('eggPopup').classList.add('show');
+    setTimeout(()=>document.getElementById('eggPopup').classList.remove('show'),3000);
+    launchKonfetti('⭐');
+  }
+});
+
+// ============================================================
+// KONFETTI
+// ============================================================
+function launchKonfetti(center='✦') {
+  const colors = ['#d4a843','#c97a8a','#6b8f71','#7eb8d4','#b8a9d4','#f0d5b8'];
+  for(let i=0;i<40;i++){
+    const k = document.createElement('div');
+    k.className = 'konfetto';
+    k.style.left = (20+Math.random()*60)+'vw';
+    k.style.top = '-10px';
+    k.style.background = colors[Math.floor(Math.random()*colors.length)];
+    k.style.animationDelay = Math.random()*1.5+'s';
+    k.style.animationDuration = (1.5+Math.random()*1.5)+'s';
+    k.style.transform = `rotate(${Math.random()*360}deg)`;
+    if(Math.random()>0.7) { k.style.background='none'; k.textContent=center; k.style.fontSize='16px'; }
+    document.body.appendChild(k);
+    setTimeout(()=>k.remove(),3500);
+  }
+}
+
+// ============================================================
+// FLOATING HEADER STARS PARALLAX
+// ============================================================
+document.addEventListener('mousemove', e => {
+  const stars = document.querySelectorAll('.fstar');
+  stars.forEach((s,i) => {
+    const speed = 0.01 + (i%4)*0.005;
+    const x = (e.clientX - window.innerWidth/2)*speed;
+    const y = (e.clientY - window.innerHeight/2)*speed;
+    s.style.transform = `translate(${x}px,${y}px)`;
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Right Now — Things Happening This Second</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0eee8;
+    --muted: #6b6b80;
+    --accent1: #ff4d6d;
+    --accent2: #00d4aa;
+    --accent3: #ffd166;
+    --accent4: #a78bfa;
+    --accent5: #38bdf8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(167,139,250,0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,212,170,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 20% 90%, rgba(255,77,109,0.05) 0%, transparent 60%);
+  }
+
+  .ticker-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: var(--accent1);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: #fff;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-item {
+    padding: 0 2rem;
+    border-right: 1px solid rgba(255,255,255,0.3);
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    letter-spacing: 0.02em;
+    line-height: 0.9;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .hero h1 span {
+    color: var(--accent1);
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    color: var(--muted);
+    max-width: 500px;
+    margin-bottom: 3rem;
+  }
+
+  .hero-clock {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent4);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 3rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+    animation: float 2s ease-in-out infinite;
+  }
+
+  .scroll-hint svg { opacity: 0.5; }
+
+  @keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ---- SECTIONS ---- */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: 0.02em;
+    margin-bottom: 3rem;
+    line-height: 1;
+  }
+
+  /* ---- BIG COUNTERS GRID ---- */
+  .counters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2px;
+    margin-bottom: 6rem;
+  }
+
+  .counter-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s, border-color 0.3s;
+    cursor: default;
+  }
+
+  .counter-card:hover {
+    background: var(--surface2);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .counter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-accent, var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s ease;
+  }
+
+  .counter-card:hover::before { transform: scaleX(1); }
+
+  .counter-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .counter-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+
+  .counter-value {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700;
+    color: var(--card-accent, var(--accent2));
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    transition: color 0.3s;
+    word-break: break-all;
+  }
+
+  .counter-context {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* flash animation on update */
+  @keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  .flashing { animation: flash 0.3s ease; }
+
+  /* ---- SEPARATOR ---- */
+  .full-sep {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* ---- FACT STRIP ---- */
+  .fact-strip {
+    background: var(--accent3);
+    color: #0a0a0f;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .fact-strip .label {
+    font-weight: 700;
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .fact-scroll {
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .fact-text {
+    transition: opacity 0.5s, transform 0.5s;
+  }
+
+  .fact-text.out {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  /* ---- LIVE EVENTS FEED ---- */
+  .feed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .feed-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    background: var(--surface2);
+  }
+
+  .feed-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent1);
+    animation: pulse-dot 1s ease-in-out infinite;
+  }
+
+  .feed-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.9rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    animation: slideIn 0.4s ease;
+    font-size: 13px;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .feed-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+    padding-top: 2px;
+    min-width: 55px;
+  }
+
+  .feed-emoji { font-size: 16px; min-width: 24px; }
+
+  .feed-text { color: var(--text); line-height: 1.4; }
+
+  .feed-text strong {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* ---- YEAR PROGRESS ---- */
+  .progress-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .progress-section { grid-template-columns: 1fr; }
+  }
+
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+  }
+
+  .progress-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .progress-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .progress-bar-wrap {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  .progress-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ---- SCALE SECTION ---- */
+  .scale-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .scale-item {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .scale-item:hover { background: var(--surface2); }
+
+  @media (max-width: 600px) {
+    .scale-item { grid-template-columns: 1fr; gap: 0.5rem; }
+  }
+
+  .scale-item-label {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scale-bar-wrap {
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .scale-bar {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent4);
+    transition: width 1s ease;
+  }
+
+  .scale-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent4);
+    text-align: right;
+    min-width: 80px;
+  }
+
+  /* ---- WORD COUNTER ---- */
+  .word-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .word-card {
+    flex: 1;
+    min-width: 160px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    text-align: center;
+    transition: background 0.2s;
+  }
+
+  .word-card:hover { background: var(--surface2); }
+
+  .word-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent5);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .word-lbl {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ---- RANDOM FACT BUTTON ---- */
+  .fact-btn-wrap {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .fact-btn {
+    background: transparent;
+    border: 1.5px solid var(--accent1);
+    color: var(--accent1);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fact-btn:hover {
+    background: var(--accent1);
+    color: #fff;
+  }
+
+  .fact-btn:active { transform: scale(0.97); }
+
+  .random-fact-text {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--text);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 60px;
+    line-height: 1.7;
+    transition: opacity 0.3s;
+  }
+
+  .random-fact-source {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  footer span { color: var(--accent1); }
+
+  /* ---- REVEAL ANIMATION ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-inner" id="tickerInner"></div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-eyebrow">
+    <div class="pulse-dot"></div>
+    Live — updated every second
+  </div>
+  <h1>Right<br><span>Now</span></h1>
+  <p class="hero-sub">Every second, the world is doing something wild. Here's what's happening this exact moment.</p>
+  <div class="hero-clock" id="heroClock">00:00:00</div>
+  <div class="hero-date" id="heroDate"></div>
+  <div class="scroll-hint">
+    scroll
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 10l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
+</div>
+
+<!-- SECTION: BIG NUMBERS -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">01 — Big Numbers</div>
+  <h2 class="section-title">Since you opened<br>this page</h2>
+  <div class="counters-grid" id="countersGrid"></div>
+</section>
+
+<!-- FACT STRIP -->
+<div class="fact-strip">
+  <div class="label">Did you know</div>
+  <div class="fact-scroll">
+    <div class="fact-text" id="factStripText">Loading...</div>
+  </div>
+</div>
+
+<!-- SECTION: YEAR PROGRESS -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">02 — Time Marching On</div>
+  <h2 class="section-title">How far through<br>are we?</h2>
+  <div class="progress-section" id="progressSection"></div>
+</section>
+
+<!-- SECTION: LIVE FEED -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">03 — Live Feed</div>
+  <h2 class="section-title">Happening right<br>now, somewhere</h2>
+  <div class="feed">
+    <div class="feed-header">
+      <div class="feed-dot"></div>
+      LIVE EVENT STREAM — auto-updating
+    </div>
+    <ul class="feed-list" id="feedList"></ul>
+  </div>
+</section>
+
+<!-- SECTION: INTERNET THIS SECOND -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">04 — The Internet</div>
+  <h2 class="section-title">The internet<br>in one second</h2>
+  <div class="word-row" id="internetCards"></div>
+</section>
+
+<!-- SECTION: SCALE -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">05 — Scale</div>
+  <h2 class="section-title">How fast<br>things happen</h2>
+  <div class="scale-items" id="scaleItems"></div>
+</section>
+
+<!-- SECTION: RANDOM FACT -->
+<div class="full-sep"></div>
+<section class="reveal">
+  <div class="section-label">06 — One More Thing</div>
+  <h2 class="section-title">A fact<br>to end on</h2>
+  <div class="fact-btn-wrap">
+    <button class="fact-btn" onclick="newRandomFact()">↻ &nbsp; Show me a fact</button>
+    <div class="random-fact-text" id="randomFactText">Press the button above.</div>
+    <div class="random-fact-source" id="randomFactSource"></div>
+  </div>
+</section>
+
+<footer>
+  Built for curious minds &nbsp;/&nbsp; All figures are approximations based on global statistics &nbsp;/&nbsp; Made with <span>♥</span>
+</footer>
+
+<script>
+// ---- UTILITIES ----
+function fmt(n) {
+  return Math.floor(n).toLocaleString();
+}
+
+let startTime = Date.now();
+
+// ---- CLOCK ----
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('heroClock').textContent = `${h}:${m}:${s}`;
+  document.getElementById('heroDate').textContent = now.toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'}).toUpperCase();
+}
+
+// ---- TICKER ----
+const tickerItems = [
+  "🌍 Every 4.5 seconds, a baby is born",
+  "💀 Every 18 seconds, someone dies of hunger",
+  "🌲 Every 1.2 seconds, a football field of forest is lost",
+  "💻 Every second, 6,000 tweets are posted",
+  "📧 Every second, 3.5 million emails are sent",
+  "🦋 1 million insects die every second",
+  "⚡ Lightning strikes Earth 100 times per second",
+  "💰 Jeff Bezos earns roughly $4,400 per second",
+  "🌊 1.5 billion tons of water evaporates per second",
+  "🚗 Every 25 seconds, someone dies in a road accident",
+];
+
+function buildTicker() {
+  const inner = document.getElementById('tickerInner');
+  const doubled = [...tickerItems, ...tickerItems];
+  inner.innerHTML = doubled.map(t => `<span class="ticker-item">${t}</span>`).join('');
+}
+buildTicker();
+
+// ---- COUNTER DATA ----
+// rate = per second (global approximations)
+const counters = [
+  { id:'births', label:'Babies Born', icon:'👶', rate: 4.5, context: '≈ 385,000 per day', accent: '--accent2' },
+  { id:'deaths', label:'People Who Died', icon:'💀', rate: 1.85, context: '≈ 160,000 per day', accent: '--accent1' },
+  { id:'tweets', label:'Tweets Posted', icon:'🐦', rate: 6000, context: 'On X / Twitter', accent: '--accent5' },
+  { id:'emails', label:'Emails Sent', icon:'📧', rate: 3500000, context: '≈ 300 billion per day', accent: '--accent3' },
+  { id:'google', label:'Google Searches', icon:'🔍', rate: 99000, context: '8.5 billion per day', accent: '--accent4' },
+  { id:'youtube', label:'YouTube Views', icon:'▶️', rate: 80000, context: '1 billion hours watched daily', accent: '--accent1' },
+  { id:'forest', label:'m² Forest Lost', icon:'🌲', rate: 10000, context: '≈ 10 million ha per year', accent: '--accent2' },
+  { id:'co2', label:'Tons of CO₂ Emitted', icon:'🌫️', rate: 1340, context: '≈ 37 billion tons per year', accent: '--accent3' },
+  { id:'lightning', label:'Lightning Strikes', icon:'⚡', rate: 100, context: 'Around the world', accent: '--accent3' },
+  { id:'plastic', label:'kg Plastic in Ocean', icon:'🌊', rate: 250, context: '8 million tons per year', accent: '--accent5' },
+  { id:'cars', label:'km Driven (cars)', icon:'🚗', rate: 30000000, context: 'Globally, every second', accent: '--accent4' },
+  { id:'insect', label:'Insect Deaths', icon:'🦋', rate: 1000000, context: 'Est. from pesticides & loss', accent: '--accent1' },
+  { id:'songs', label:'Songs Streamed', icon:'🎵', rate: 30000, context: 'Spotify: 2.5 billion per day', accent: '--accent2' },
+  { id:'heart', label:'Human Heartbeats', icon:'❤️', rate: 8000000000, context: 'All 8 billion humans combined', accent: '--accent1' },
+  { id:'breath', label:'Human Breaths', icon:'💨', rate: 133000000, context: '≈ 16 breaths/min per person', accent: '--accent5' },
+  { id:'sleep', label:'People Asleep Now', icon:'😴', rate: 0, context: 'About 3.5 billion people', accent: '--accent4', static: '3,500,000,000' },
+];
+
+function buildCounters() {
+  const grid = document.getElementById('countersGrid');
+  grid.innerHTML = counters.map(c => `
+    <div class="counter-card" style="--card-accent: var(${c.accent})">
+      <span class="counter-icon">${c.icon}</span>
+      <div class="counter-label">${c.label}</div>
+      <div class="counter-value" id="val-${c.id}">${c.static || '0'}</div>
+      <div class="counter-context">${c.context}</div>
+    </div>
+  `).join('');
+}
+buildCounters();
+
+function updateCounters() {
+  const elapsed = (Date.now() - startTime) / 1000;
+  counters.forEach(c => {
+    if (c.static) return;
+    const el = document.getElementById(`val-${c.id}`);
+    if (!el) return;
+    const val = fmt(c.rate * elapsed);
+    if (el.textContent !== val) {
+      el.textContent = val;
+      el.classList.remove('flashing');
+      void el.offsetWidth;
+      el.classList.add('flashing');
+    }
+  });
+}
+
+// ---- PROGRESS BARS ----
+function buildProgress() {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  const yearStart = new Date(year, 0, 1);
+  const yearEnd = new Date(year + 1, 0, 1);
+  const yearPct = ((now - yearStart) / (yearEnd - yearStart) * 100).toFixed(2);
+
+  const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayPct = ((now - dayStart) / 86400000 * 100).toFixed(2);
+
+  const weekDay = now.getDay() === 0 ? 7 : now.getDay();
+  const weekPct = ((weekDay - 1 + now.getHours()/24) / 7 * 100).toFixed(2);
+
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth()+1, 1);
+  const monthPct = ((now - monthStart) / (monthEnd - monthStart) * 100).toFixed(2);
+
+  const items = [
+    { label: `Year ${year} progress`, pct: yearPct, color: 'var(--accent2)', sub: `${(100 - yearPct).toFixed(1)}% of ${year} remaining` },
+    { label: 'Today progress', pct: dayPct, color: 'var(--accent3)', sub: `${(1440 * dayPct / 100).toFixed(0)} minutes elapsed today` },
+    { label: 'Week progress', pct: weekPct, color: 'var(--accent4)', sub: `Day ${weekDay} of 7` },
+    { label: `Month progress`, pct: monthPct, color: 'var(--accent5)', sub: `${now.toLocaleDateString('en-US',{month:'long'})} — ${monthPct}% done` },
+  ];
+
+  document.getElementById('progressSection').innerHTML = items.map(i => `
+    <div class="progress-card">
+      <div class="progress-title">${i.label}</div>
+      <div class="progress-value" style="color:${i.color}">${i.pct}%</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${i.pct}%;background:${i.color}"></div>
+      </div>
+      <div class="progress-sub">${i.sub}</div>
+    </div>
+  `).join('');
+}
+buildProgress();
+
+// ---- LIVE FEED ----
+const feedEvents = [
+  { emoji:'👶', text: 'A baby was just born in <strong>Lagos, Nigeria</strong>' },
+  { emoji:'🌳', text: 'A tree was planted in <strong>Iceland</strong> as part of reforestation' },
+  { emoji:'🎓', text: 'Someone graduated from university in <strong>Mumbai</strong>' },
+  { emoji:'💍', text: 'A couple got married in <strong>Lahore, Pakistan</strong>' },
+  { emoji:'🚀', text: 'A satellite completed another orbit of Earth' },
+  { emoji:'🐋', text: 'A blue whale took a breath off the coast of <strong>Sri Lanka</strong>' },
+  { emoji:'⚽', text: 'A goal was scored in a Sunday league match in <strong>Manchester</strong>' },
+  { emoji:'📚', text: 'Someone finished reading a book in <strong>Tokyo</strong>' },
+  { emoji:'🎸', text: 'A teenager played guitar for the first time in <strong>São Paulo</strong>' },
+  { emoji:'🌅', text: 'Sunrise began in <strong>Auckland, New Zealand</strong>' },
+  { emoji:'🦁', text: 'A lion cub took its first steps in <strong>the Serengeti</strong>' },
+  { emoji:'💌', text: 'Someone confessed their love in a text message' },
+  { emoji:'🍕', text: 'A pizza was delivered in <strong>New York City</strong>' },
+  { emoji:'🌧️', text: 'It started raining in <strong>London</strong> (again)' },
+  { emoji:'🧪', text: 'A scientist published a new paper in <strong>Geneva</strong>' },
+  { emoji:'🎂', text: 'Someone\'s birthday just began in <strong>Seoul</strong>' },
+  { emoji:'🏊', text: 'A child learned to swim in <strong>Cape Town</strong>' },
+  { emoji:'🌺', text: 'A flower bloomed in a garden in <strong>Kyoto</strong>' },
+  { emoji:'💻', text: 'A developer pushed code to GitHub for the first time' },
+  { emoji:'🎉', text: 'A retirement party started in <strong>Chicago</strong>' },
+  { emoji:'🐣', text: 'A chick hatched from an egg on a farm in <strong>Iowa</strong>' },
+  { emoji:'📱', text: 'Someone dropped their phone and the screen cracked in <strong>Paris</strong>' },
+  { emoji:'🌍', text: 'Earth traveled another 30 km through space' },
+  { emoji:'🍼', text: 'A baby said their first word in <strong>Jakarta</strong>' },
+  { emoji:'🧲', text: 'A fridge magnet fell off somewhere in <strong>Buenos Aires</strong>' },
+  { emoji:'✈️', text: '12 planes just took off simultaneously around the world' },
+  { emoji:'🏃', text: 'Someone finished a marathon in <strong>Berlin</strong>' },
+  { emoji:'😂', text: 'A joke landed perfectly at a dinner table in <strong>Nairobi</strong>' },
+];
+
+let feedShuffled = [...feedEvents].sort(() => Math.random() - 0.5);
+let feedIndex = 0;
+const MAX_FEED = 7;
+
+function getTime() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+}
+
+function addFeedItem() {
+  const list = document.getElementById('feedList');
+  if (!list) return;
+  const ev = feedShuffled[feedIndex % feedShuffled.length];
+  feedIndex++;
+
+  const li = document.createElement('li');
+  li.className = 'feed-item';
+  li.innerHTML = `
+    <span class="feed-time">${getTime()}</span>
+    <span class="feed-emoji">${ev.emoji}</span>
+    <span class="feed-text">${ev.text}</span>
+  `;
+  list.insertBefore(li, list.firstChild);
+  while (list.children.length > MAX_FEED) {
+    list.removeChild(list.lastChild);
+  }
+}
+
+// pre-fill feed
+for (let i = 0; i < 5; i++) addFeedItem();
+
+// ---- INTERNET CARDS ----
+const internetCards = [
+  { id:'ic-email', label:'Emails sent', rate: 3500000, icon:'📧', color: 'var(--accent3)' },
+  { id:'ic-google', label:'Google searches', rate: 99000, icon:'🔍', color: 'var(--accent4)' },
+  { id:'ic-yt', label:'YouTube views', rate: 80000, icon:'▶️', color: 'var(--accent1)' },
+  { id:'ic-tweet', label:'Tweets posted', rate: 6000, icon:'🐦', color: 'var(--accent5)' },
+  { id:'ic-insta', label:'Instagram likes', rate: 8300, icon:'❤️', color: 'var(--accent1)' },
+  { id:'ic-whatsapp', label:'WhatsApp messages', rate: 285000, icon:'💬', color: 'var(--accent2)' },
+];
+
+function buildInternetCards() {
+  document.getElementById('internetCards').innerHTML = internetCards.map(c => `
+    <div class="word-card">
+      <span style="font-size:1.5rem;display:block;margin-bottom:0.5rem">${c.icon}</span>
+      <span class="word-num" id="${c.id}" style="color:${c.color}">0</span>
+      <span class="word-lbl">${c.label}</span>
+    </div>
+  `).join('');
+}
+buildInternetCards();
+
+function updateInternetCards() {
+  const elapsed = (Date.now() - startTime) / 1000;
+  internetCards.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (el) el.textContent = fmt(c.rate * elapsed);
+  });
+}
+
+// ---- SCALE ITEMS ----
+const scaleItems = [
+  { label:'💓 Heartbeats (you)', perSec: 1.2, max: 100 },
+  { label:'⚡ Lightning strikes', perSec: 100, max: 100 },
+  { label:'🔍 Google searches', perSec: 99000, max: 99000 },
+  { label:'📧 Emails sent', perSec: 3500000, max: 3500000 },
+  { label:'🌍 Earth km thru space', perSec: 30, max: 30 },
+];
+
+function buildScaleItems() {
+  document.getElementById('scaleItems').innerHTML = scaleItems.map((s,i) => `
+    <div class="scale-item reveal">
+      <div class="scale-item-label">${s.label}</div>
+      <div class="scale-bar-wrap">
+        <div class="scale-bar" id="sbar-${i}" style="width:0%"></div>
+      </div>
+      <div class="scale-count" id="scount-${i}">0 / sec</div>
+    </div>
+  `).join('');
+}
+buildScaleItems();
+
+function updateScaleBars() {
+  scaleItems.forEach((s,i) => {
+    const el = document.getElementById(`sbar-${i}`);
+    const cel = document.getElementById(`scount-${i}`);
+    if (el) el.style.width = '100%';
+    if (cel) cel.textContent = `${fmt(s.perSec)} / sec`;
+  });
+}
+setTimeout(updateScaleBars, 300);
+
+// ---- FACT STRIP ROTATION ----
+const stripFacts = [
+  "The average person will spend 6 months of their life waiting at red lights.",
+  "More people die from selfies than shark attacks each year.",
+  "Right now, about 105 people are celebrating their 100th birthday.",
+  "The internet weighs about 50 grams — the mass of all electrons in motion.",
+  "You share 50% of your DNA with a banana.",
+  "Right now, approximately 1,200 people are on planes over the US alone.",
+  "There are more possible iterations of a chess game than atoms in the observable universe.",
+  "Every 60 seconds, 500 hours of video are uploaded to YouTube.",
+  "The average human produces enough saliva in a lifetime to fill two swimming pools.",
+  "More stars exist in the universe than grains of sand on all Earth's beaches.",
+];
+let stripIndex = 0;
+
+function rotateFact() {
+  const el = document.getElementById('factStripText');
+  if (!el) return;
+  el.classList.add('out');
+  setTimeout(() => {
+    stripIndex = (stripIndex + 1) % stripFacts.length;
+    el.textContent = stripFacts[stripIndex];
+    el.classList.remove('out');
+  }, 500);
+}
+document.getElementById('factStripText').textContent = stripFacts[0];
+
+// ---- RANDOM FACTS ----
+const randomFacts = [
+  { text: "Right now, the Voyager 1 spacecraft is over 24 billion kilometres from Earth — and it's still transmitting.", src: "NASA" },
+  { text: "This second, roughly 1,000 thunderstorms are occurring simultaneously around the world.", src: "NOAA" },
+  { text: "Every second, the sun converts 4 million tonnes of matter into pure energy.", src: "Physics" },
+  { text: "Right now, there are more trees on Earth than stars in the Milky Way galaxy.", src: "Nature Study, 2015" },
+  { text: "In the time you've been on this page, light has travelled far enough to circle Earth multiple times.", src: "Physics" },
+  { text: "More than half of the world's population has never made a phone call.", src: "UN Telecom" },
+  { text: "This second, the Earth's magnetic field is slowly shifting — about 55 km toward Siberia per year.", src: "ESA" },
+  { text: "Right now, 20,000 satellites are orbiting Earth, including over 5,000 Starlink satellites.", src: "ESA / SpaceX" },
+  { text: "Every second, humans collectively blink about 15 billion times.", src: "Medical estimate" },
+  { text: "The oldest living organism on Earth is a 5,000-year-old bristlecone pine tree still alive in California.", src: "USDA" },
+  { text: "Right now, deep-sea creatures are living in complete darkness at pressures 1,000× greater than at the surface.", src: "NOAA" },
+  { text: "As you read this, your body has replaced about 25 million cells — it happens constantly.", src: "Biology" },
+  { text: "Every second, about 100 tons of meteoritic material falls to Earth — most of it as tiny dust particles.", src: "NASA" },
+];
+
+let lastFactIndex = -1;
+
+function newRandomFact() {
+  let idx;
+  do { idx = Math.floor(Math.random() * randomFacts.length); } while (idx === lastFactIndex);
+  lastFactIndex = idx;
+  const f = randomFacts[idx];
+  const el = document.getElementById('randomFactText');
+  const src = document.getElementById('randomFactSource');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = f.text;
+    src.textContent = `Source: ${f.src}`;
+    el.style.opacity = 1;
+  }, 200);
+}
+
+// ---- SCROLL REVEAL ----
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+revealEls.forEach(el => observer.observe(el));
+
+// ---- MAIN LOOP ----
+setInterval(() => {
+  updateClock();
+  updateCounters();
+  updateInternetCards();
+}, 1000);
+
+setInterval(addFeedItem, 3000);
+setInterval(rotateFact, 6000);
+setInterval(buildProgress, 10000);
+
+updateClock();
+</script>
+</body>
+</html>
