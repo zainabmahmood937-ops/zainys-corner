@@ -1,0 +1,884 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080604;color:#e8d5b0;font-family:'Courier New',monospace;min-height:100vh;overflow-x:hidden}
+.page{display:flex;flex-direction:column;align-items:center;padding:16px 8px 40px;gap:14px;position:relative;z-index:1}
+.scanlines{position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.08)0px,rgba(0,0,0,0.08)1px,transparent 1px,transparent 3px);pointer-events:none;z-index:9999}
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
+.title{text-align:center;padding:10px 0 4px}
+.title h1{font-size:26px;letter-spacing:7px;color:#f0c040;text-transform:uppercase;font-weight:normal;text-shadow:0 0 30px #f0c04066}
+.title p{font-size:10px;color:#6a4e2a;letter-spacing:4px;margin-top:3px}
+.radio{background:#1c1208;border:2px solid #3a2810;border-radius:18px;padding:22px 20px 18px;width:100%;max-width:680px;position:relative}
+.screen{background:#020a02;border:2px solid #0a280a;border-radius:10px;padding:14px 16px 12px;margin-bottom:16px;min-height:140px;position:relative;overflow:hidden}
+.screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,0,0.012)2px,rgba(0,255,0,0.012)3px);pointer-events:none;z-index:5}
+.screen-flicker{position:absolute;inset:0;opacity:0;background:rgba(0,255,100,0.03);z-index:4;pointer-events:none;transition:opacity 0.1s}
+.freq-row{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.freq-num{font-size:40px;color:#00ff88;font-family:'Courier New',monospace;letter-spacing:3px;line-height:1;transition:color 0.4s}
+.freq-unit{font-size:11px;color:#00aa55;letter-spacing:2px}
+.stn-name{font-size:13px;color:#f0c040;letter-spacing:2px;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color 0.4s}
+.sig-row{display:flex;gap:3px;align-items:flex-end;margin-bottom:8px}
+.sbar{width:5px;border-radius:2px;background:#0a200a;transition:background 0.3s,height 0.3s}
+.broadcast{font-size:11px;color:#55bb77;line-height:1.6;min-height:32px;font-style:italic;transition:opacity 0.4s}
+.cat-badge{position:absolute;top:10px;right:12px;font-size:9px;color:#f0c04099;letter-spacing:2px;text-transform:uppercase}
+.rare-pill{position:absolute;top:10px;left:12px;font-size:9px;color:#ff5533;border:1px solid #ff553355;padding:2px 7px;border-radius:3px;letter-spacing:2px;animation:blink 1.8s infinite;display:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.dial-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+#dc{cursor:grab;border-radius:50%;flex-shrink:0;display:block}
+#dc:active{cursor:grabbing}
+.scale-col{flex:1;display:flex;flex-direction:column;gap:8px}
+.scale-track{position:relative;height:40px;background:#08080a;border:1px solid #2a1f0e;border-radius:4px;overflow:hidden;cursor:pointer}
+.scale-needle{position:absolute;top:0;bottom:0;width:2px;background:#f0c040;left:50%;transform:translateX(-50%);pointer-events:none;z-index:3}
+.scale-needle::before{content:'▼';position:absolute;top:-1px;left:50%;transform:translateX(-50%);font-size:8px;color:#f0c040;line-height:1}
+.scale-stations{position:absolute;inset:0}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rbtn{background:#120e06;border:1px solid #3a2810;color:#b09060;font-family:'Courier New',monospace;font-size:11px;padding:7px 13px;border-radius:5px;cursor:pointer;letter-spacing:1px;transition:all 0.2s;user-select:none}
+.rbtn:hover{background:#1e1608;border-color:#6a4e2a;color:#f0c040}
+.rbtn.on{background:#1e1608;border-color:#f0c040;color:#f0c040;box-shadow:inset 0 0 8px #f0c04022}
+.rbtn.play-btn{background:#0a1e0a;border-color:#1a5a1a;color:#44dd66;font-size:14px;padding:8px 16px}
+.rbtn.play-btn:hover{border-color:#44dd66;color:#88ff88}
+.rbtn.play-btn.on{background:#0a2a0a;border-color:#44dd66;color:#88ff88}
+.fav-star{background:none;border:none;font-size:18px;color:#3a2810;cursor:pointer;transition:all 0.2s;line-height:1;padding:4px 6px}
+.fav-star.on{color:#f0c040;text-shadow:0 0 10px #f0c040}
+.vol-row{display:flex;align-items:center;gap:8px;flex:1;min-width:120px}
+.vol-row label{font-size:9px;color:#6a4e2a;letter-spacing:2px;white-space:nowrap}
+.vol-row input{flex:1;accent-color:#f0c040;cursor:pointer}
+.card{background:#0c0906;border:1px solid #2a1f0e;border-radius:10px;padding:14px 16px;transition:border-color 0.3s}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px}
+.card-title{font-size:13px;color:#f0c040;letter-spacing:1px}
+.card-khz{font-size:10px;color:#5a4020;white-space:nowrap}
+.card-desc{font-size:11px;color:#8a7060;line-height:1.65}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:9px;padding:2px 7px;border:1px solid #2a1f0e;border-radius:3px;color:#6a4e2a;letter-spacing:1px}
+.btns2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.favs-wrap{width:100%;max-width:680px}
+.favs-wrap h3{font-size:10px;color:#5a4020;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase}
+.fav-chips{display:flex;flex-wrap:wrap;gap:6px}
+.fav-chip{background:#120e06;border:1px solid #2a1f0e;border-radius:20px;padding:4px 12px;font-size:10px;color:#7a6040;cursor:pointer;transition:all 0.2s;letter-spacing:1px}
+.fav-chip:hover{border-color:#f0c04066;color:#f0c040}
+.hint{font-size:9px;color:#2a1f0e;text-align:center;letter-spacing:3px;margin-top:8px;padding-bottom:4px}
+.audio-notice{background:#0a1a0a;border:1px solid #1a4a1a;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:12px;color:#55aa55;letter-spacing:1px}
+.audio-notice span{font-size:22px}
+.progress-bar{width:100%;height:3px;background:#1a1208;border-radius:2px;position:relative;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:#f0c040;width:0%;transition:width 0.2s;border-radius:2px}
+</style>
+
+<div class="scanlines"></div>
+<canvas id="bgc"></canvas>
+
+<div class="page">
+  <div class="title">
+    <h1>Lost Radio Stations</h1>
+    <p>TUNE THE DIAL · DISCOVER FORGOTTEN SIGNALS · 2:00 AM</p>
+  </div>
+
+  <div class="audio-notice" id="audio-notice">
+    <span>&#127925;</span>
+    <div>
+      <div>Click <strong style="color:#88ff88">PLAY AUDIO</strong> below to unlock sound — browsers require a tap first.</div>
+      <div style="font-size:10px;color:#336633;margin-top:3px">Rich synthesized music + ambient effects for every station</div>
+    </div>
+  </div>
+
+  <div class="radio">
+    <div class="screen" id="screen">
+      <div class="rare-pill" id="rare-pill">&#9670; RARE</div>
+      <div class="cat-badge" id="cat-badge">JAZZ</div>
+      <div class="screen-flicker" id="flicker"></div>
+      <div class="freq-row">
+        <div class="freq-num" id="freq-num">530.0</div>
+        <div class="freq-unit">kHz</div>
+      </div>
+      <div class="stn-name" id="stn-name">WJAZ &middot; The Golden Age</div>
+      <div class="sig-row" id="sig-row"></div>
+      <div class="broadcast" id="broadcast">&#9834; Drifting through smoke-filled rooms and velvet curtains...</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    </div>
+
+    <div class="dial-row">
+      <canvas id="dc" width="120" height="120"></canvas>
+      <div class="scale-col">
+        <div class="scale-track" id="scale-track">
+          <div class="scale-stations" id="scale-dots"></div>
+          <div class="scale-needle"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:9px;color:#3a2810">530</span>
+          <span style="font-size:9px;color:#3a2810;text-align:center;flex:1">&#8592; DRAG DIAL OR CLICK BAR &#8594;</span>
+          <span style="font-size:9px;color:#3a2810">1710 kHz</span>
+        </div>
+        <div class="btn-row">
+          <button class="rbtn" id="btn-prev">&#9664; PREV</button>
+          <button class="rbtn" id="btn-next">NEXT &#9654;</button>
+          <button class="fav-star" id="fav-star" title="Save to favorites">&#9825;</button>
+          <div class="vol-row">
+            <label>VOL</label>
+            <input type="range" id="vol" min="0" max="100" value="70" step="1">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="info-card">
+      <div class="card-head">
+        <div class="card-title" id="card-title">WJAZ &middot; The Golden Age</div>
+        <div class="card-khz" id="card-khz">530.0 kHz</div>
+      </div>
+      <div class="card-desc" id="card-desc">Loading station information...</div>
+      <div class="tags" id="card-tags"></div>
+    </div>
+
+    <div class="btns2">
+      <button class="rbtn play-btn" id="btn-play">&#9654; PLAY AUDIO</button>
+      <button class="rbtn" id="btn-scan">&#8635; AUTO SCAN</button>
+      <button class="rbtn" id="btn-shuffle">&#8756; SHUFFLE</button>
+    </div>
+  </div>
+
+  <div class="favs-wrap">
+    <h3>Saved Frequencies</h3>
+    <div class="fav-chips" id="fav-chips">
+      <span style="font-size:10px;color:#3a2810">Tap &#9825; on any station to save it here</span>
+    </div>
+  </div>
+
+  <p class="hint">&middot; &middot; &middot; if you hear this broadcast you are already dreaming &middot; &middot; &middot;</p>
+</div>
+
+<script>
+const STATIONS=[
+  {freq:530,name:"WJAZ \xb7 The Golden Age",cat:"1920s JAZZ",col:"#d4a020",bg:"jazz",sig:9,rare:false,
+   desc:"Broadcasting since 1922 from an abandoned theater in New Orleans. The host, known only as 'The Velvet Voice,' plays requests from callers who have been dead for decades. The phone lines should be disconnected. They are not.",
+   tags:["1920S","JAZZ","MYSTERY"],
+   lines:["♪ Drifting through smoke-filled rooms and velvet curtains...","Good evening, darlings. The year is... well, does it matter?","Next up — a request from someone who signed their card 'your grandfather'.","♪ Ivory keys and cigarette smoke at 2 AM...","The Velvet Voice here. We play for the living and the... otherwise."]},
+  {freq:620,name:"KDIN \xb7 Rosie's Diner",cat:"1950s DINER",col:"#e04040",bg:"diner",sig:8,rare:false,
+   desc:"The last broadcast from a 1957 Airstream diner on Route 66. Still picks up the jukebox somehow. Patty-melt specials and cherry pie every Tuesday. The waitress hasn't aged in 40 years.",
+   tags:["1950S","NOSTALGIA","DINER"],
+   lines:["Hey sugar! The usual? We just put on a fresh pot.","♪ Rock around the clock tonight...","Bobby just won the doo-wop contest! The whole town is buzzing!","Pie's still warm. Jukebox just started playing on its own again.","Will someone please explain why the calendar still says 1957?"]},
+  {freq:710,name:"WDSC \xb7 Disco Inferno",cat:"1970s DISCO",col:"#cc44ff",bg:"disco",sig:7,rare:false,
+   desc:"From the basement of Studio 54's forgotten annex. The DJ never left. The glitter ball still spins. The music never stopped. Time has become a suggestion.",
+   tags:["DISCO","1970S","DANCE"],
+   lines:["GET DOWN TONIGHT babies — this is WDSC!","♪ Stayin' alive, stayin' alive... well, mostly...","The dance floor is ELECTRIC — who IS that in the silver jumpsuit?!","Last call for the 1977 after-party. Time is now irrelevant.","Your DJ has been here since Tuesday. Or was it 1974? Both?"]},
+  {freq:800,name:"SYNW \xb7 Neon Dreams FM",cat:"1980s SYNTH",col:"#00eeff",bg:"synth",sig:9,rare:false,
+   desc:"Somewhere between an 80s movie montage and a fever dream. Grid highways and neon skies. The synthesizers never sleep. The host wears a headband and is extremely sincere about it.",
+   tags:["SYNTHWAVE","1980S","ELECTRONIC"],
+   lines:["You're tuned to NEON DREAMS. Population: you.","♪ Driving down Sunset Boulevard in a DeLorean at 88mph...","Tonight's top requests: more synth, more reverb, more everything.","This frequency only exists in movies that haven't been made yet.","The grid goes on forever. We are all passengers now."]},
+  {freq:890,name:"KGRNG \xb7 Grunge Hour",cat:"1990s NOSTALGIA",col:"#88aa44",bg:"grunge",sig:6,rare:false,
+   desc:"Dial-up tones and plaid flannel. Someone is recording this to a cassette tape. The host still hasn't figured out what they want to be when they grow up, but the music is really good.",
+   tags:["1990S","GRUNGE","NOSTALGIA"],
+   lines:["Whatever, this is KGRNG. Your calls: 1-800-WHATEVER.","♪ Here we are now, entertain us...","Can someone tell me how to rewind a CD? Asking for a friend.","Up next: a 47-minute set with ZERO commercial breaks. Suck it, corporate.","The flannel is non-negotiable. Don't even ask."]},
+  {freq:960,name:"RAIN \xb7 Rainy Night Radio",cat:"RAINY NIGHT",col:"#6699cc",bg:"rain",sig:8,rare:false,
+   desc:"No DJ. Just rain on a window, a crackling fireplace, and music chosen by the weather itself. Some nights the rain spells words in Morse code. Tonight it's saying something personal.",
+   tags:["AMBIENT","RAIN","LO-FI"],
+   lines:["...the rain keeps time better than any drummer...","pitter... patter... pitter... patter...","Tonight's forecast: gentle melancholy with a 90% chance of nostalgia.","♪ ...soft piano somewhere very far away...","...the fire is still going. You don't have to go anywhere yet..."]},
+  {freq:1040,name:"UX\u20130 \xb7 Abandoned Signal",cat:"DEAD FREQUENCY",col:"#664422",bg:"abandoned",sig:2,rare:false,
+   desc:"No broadcaster registered for this frequency since 1983. The tower still exists in rural Idaho, rusted and covered in vines. The FCC has no record of any transmitter. Yet something transmits.",
+   tags:["MYSTERY","ABANDONED","UNKNOWN"],
+   lines:["------  -.-  ------","...hello? is anyone receiving this?","day four hundred and... I've lost count.","the tower is still standing. I don't know how.","...please. is someone out there..."]},
+  {freq:1100,name:"NB3\u2013XK \xb7 Numbers Station",cat:"NUMBERS STN",col:"#ff4400",bg:"numbers",sig:5,rare:false,
+   desc:"A voice reads numbers in groups of five. No origin has ever been confirmed. Intelligence agencies decline to comment. The numbers changed last Tuesday. No one knows what they mean now.",
+   tags:["ESPIONAGE","NUMBERS","CLASSIFIED"],
+   lines:["...f\xfcnf neun zwei eins drei...","OSCAR WHISKEY SEVEN NINER...","...four eight one one seven, four eight one one seven...","ATTENTION. ATTENTION. GROUP BEGINS.","...the message will repeat. the message will repeat..."]},
+  {freq:1190,name:"PIRATE \xb7 Capt. Redwave",cat:"PIRATE RADIO",col:"#ee8800",bg:"pirate",sig:4,rare:false,
+   desc:"Broadcasting illegally from international waters aboard the MV Seagull's Rest. The FCC has been trying to shut it down for 22 years. Captain Redwave just laughs. The crew are loyal.",
+   tags:["PIRATE","ILLEGAL","OFFSHORE"],
+   lines:["AHOY, you beautiful LANDLUBBERS — this is PIRATE RADIO!","The FCC can't catch us if we keep MOVING!","♪ Sailing away on the airwaves...","If you're listening to this, you ARE the broadcast.","NINETY PERCENT of what they tell you is WRONG. We cover the other ten."]},
+  {freq:1280,name:"EAS\u20131 \xb7 Emergency Alert",cat:"EMERGENCY",col:"#ff2200",bg:"emergency",sig:10,rare:false,
+   desc:"THIS IS NOT A TEST. The Civil Emergency Alert system is broadcasting on this frequency. The nature of the event is being assessed. Please remain calm and stay tuned for further instructions.",
+   tags:["EMERGENCY","ALERT","WARNING"],
+   lines:["THIS IS AN EMERGENCY ALERT BROADCAST.","DO NOT BE ALARMED. THIS IS ONLY... ...actually please be alarmed.","THE FOLLOWING MESSAGE WILL REPEAT INDEFINITELY.","AUTHORITIES ARE ASKING YOU TO REMAIN WHERE YOU ARE.","THE EVENT DESCRIBED CANNOT BE CONFIRMED OR DENIED AT THIS TIME."]},
+  {freq:1360,name:"DSC\u20137 \xb7 Depth Station 7",cat:"DEEP SEA",col:"#0066cc",bg:"deepsea",sig:3,rare:false,
+   desc:"A research platform at 4,200 meters depth in the Mariana Trench. Radio waves don't propagate underwater. This station should not exist. The crew is still logging daily reports.",
+   tags:["OCEAN","DEEP SEA","ANOMALY"],
+   lines:["...pressure nominal... crew nominal... something in the water is NOT nominal...","We have visual contact with something. Estimating... it is very large.","The lights have been off for three days. Something else is providing illumination.","ping... ping... ping...","...it's been watching us for weeks. it doesn't seem hostile. it seems curious."]},
+  {freq:1440,name:"NASA\u2013A7 \xb7 ISS Relay",cat:"ASTRONAUT",col:"#88aaff",bg:"space",sig:6,rare:false,
+   desc:"A relay from the International Space Station. Astronaut Michael Delacroix has been alone up there since the resupply mission was scrubbed. Day 847. His voice is calm. Too calm.",
+   tags:["NASA","SPACE","ISOLATION"],
+   lines:["Houston, this is ISS. Day eight forty-seven. Houston, do you copy?","The sunrises up here — sixteen per day — never gets old.","I've started giving names to the cloud formations. Is that weird?","♪ ...he's been in space so long... ♪","Ground control... I think I saw something outside. Outside the station. Floating."]},
+  {freq:1520,name:"XST\u2013\u221e \xb7 Signal Elsewhere",cat:"ALIEN SIGNAL",col:"#00ffaa",bg:"alien",sig:5,rare:false,
+   desc:"First detected by the Parkes Radio Telescope in 2019. Exactly 1,679 pulses — a prime number. No explanation has been given to the public. The pattern recently changed to respond to us.",
+   tags:["ALIEN","SETI","UNKNOWN ORIGIN"],
+   lines:["[periodic tonal pattern: 1,679 pulses]","...the pattern has changed. It is now responding to our transmissions.","Linguists estimate 200 years to decode. Optimists say 50.","...something beautiful is trying very hard to say hello...","response received. adjusting carrier wave. please... stay on frequency."]},
+  {freq:1610,name:"CATS FM \xb7 Meow Broadcast",cat:"CAT STATION",col:"#ff88cc",bg:"cats",sig:7,rare:true,
+   desc:"A pirate station operated entirely by cats. The DJ is named Biscuits. The playlist is puzzling. The transmitter is somehow better funded than most licensed broadcasters. No humans were involved.",
+   tags:["CATS","RARE","UNCLASSIFIED"],
+   lines:["Mrrow. Mrrrow. Purr. ...this is CATS FM.","meow meow meow MEOW meow","Biscuits here with the 2AM purr-hour. All requests in Cat only.","The station will now observe a mandatory 4-hour nap. Please hold.","...mrrp. ...mrrp. ...we have treats."]},
+  {freq:1665,name:"OBS\u2013BH \xb7 Black Hole Obs.",cat:"DEEP SPACE",col:"#ff6600",bg:"blackhole",sig:2,rare:true,
+   desc:"A theoretical transmission from an observatory in stable orbit around Sagittarius A*. Time dilation means this broadcast is simultaneously from yesterday and 4,000 years ago. Both are correct.",
+   tags:["BLACK HOLE","RARE","TIME ANOMALY"],
+   lines:["...time is doing something we don't have words for yet...","The event horizon is beautiful. We're getting closer for a better look.","All clocks on board show different times. We stopped looking at them.","...transmission delay: unknown. receiving this means you exist across multiple timelines...","we are falling in love with the idea of forever."]},
+  {freq:1710,name:"YEAR3024 \xb7 Future Relay",cat:"YEAR 3024",col:"#ffee00",bg:"future",sig:1,rare:true,
+   desc:"A broadcast from approximately the year 3024. The host seems unaware they are being received in the past. Their nostalgia is for events that have not happened yet. The music is incredible.",
+   tags:["FUTURE","RARE","TIME ANOMALY"],
+   lines:["Good morning from the 31st century! Today in history: you were listening to this.","The Mars colonies say hi. They still argue about pizza toppings, apparently.","In 2024 you thought AI was impressive. Wait until you see what water does now.","We remember you. We miss you. Keep going. — The Future","...this song you're hearing hasn't been written yet. enjoy it while it's still yours."]}
+];
+
+const W=window.innerWidth,H=window.innerHeight;
+const bgc=document.getElementById('bgc');
+bgc.width=W;bgc.height=H;
+const bx=bgc.getContext('2d');
+window.addEventListener('resize',()=>{bgc.width=window.innerWidth;bgc.height=window.innerHeight});
+
+let cur=0,favs=[],vol=0.7,audioOn=false;
+let isDrag=false,lastAng=0,dialAng=0;
+let scanOn=false,scanTimer=null,bcastTimer=null,bcastIdx=0;
+let audioCtx=null,gainNode=null,activeNodes=[];
+let particles=[];
+
+const sigRow=document.getElementById('sig-row');
+for(let i=0;i<10;i++){const b=document.createElement('div');b.className='sbar';b.style.height=(5+i*3)+'px';sigRow.appendChild(b)}
+
+function updateSig(n){
+  sigRow.querySelectorAll('.sbar').forEach((b,i)=>{
+    if(i<n){const c=n<4?'#ff4422':n<7?'#f0c040':'#00ff88';b.style.background=c;b.style.boxShadow='0 0 5px '+c+'88'}
+    else{b.style.background='#0a200a';b.style.boxShadow='none'}
+  });
+}
+
+const dc=document.getElementById('dc');
+const dx=dc.getContext('2d');
+function drawDial(a){
+  const cx=60,cy=60,r=54;
+  dx.clearRect(0,0,120,120);
+  const g=dx.createRadialGradient(cx-8,cy-8,8,cx,cy,r);
+  g.addColorStop(0,'#3a2810');g.addColorStop(1,'#140e06');
+  dx.beginPath();dx.arc(cx,cy,r,0,Math.PI*2);dx.fillStyle=g;dx.fill();
+  dx.strokeStyle='#5a3a18';dx.lineWidth=2;dx.stroke();
+  for(let i=0;i<20;i++){
+    const ta=i/20*Math.PI*2,inn=i%5===0?r-12:r-6;
+    dx.beginPath();dx.moveTo(cx+Math.cos(ta)*(r-1),cy+Math.sin(ta)*(r-1));
+    dx.lineTo(cx+Math.cos(ta)*inn,cy+Math.sin(ta)*inn);
+    dx.strokeStyle=i%5===0?'#c8a030':'#4a3010';dx.lineWidth=i%5===0?1.5:0.8;dx.stroke();
+  }
+  dx.save();dx.translate(cx,cy);dx.rotate(a);
+  dx.beginPath();dx.arc(0,0,16,0,Math.PI*2);
+  dx.fillStyle='#2a1a08';dx.fill();dx.strokeStyle='#6a4a20';dx.lineWidth=1.5;dx.stroke();
+  dx.beginPath();dx.moveTo(0,-13);dx.lineTo(3.5,7);dx.lineTo(-3.5,7);dx.closePath();
+  dx.fillStyle='#f0c040';dx.fill();dx.restore();
+  dx.beginPath();dx.arc(cx,cy,5,0,Math.PI*2);dx.fillStyle='#c8a030';dx.fill();
+}
+drawDial(0);
+
+const scaleDots=document.getElementById('scale-dots');
+STATIONS.forEach((s,i)=>{
+  const pct=(s.freq-530)/(1710-530)*100;
+  const d=document.createElement('div');
+  d.style.cssText=`position:absolute;bottom:0;width:2px;height:${i%3===0?'100%':'60%'};background:${s.col}55;left:${pct}%`;
+  scaleDots.appendChild(d);
+});
+
+const scaleTrack=document.getElementById('scale-track');
+scaleTrack.addEventListener('click',e=>{
+  const rect=scaleTrack.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  const targetFreq=530+pct*(1710-530);
+  let best=0,bd=9999;
+  STATIONS.forEach((s,i)=>{const d=Math.abs(s.freq-targetFreq);if(d<bd){bd=d;best=i}});
+  if(best!==cur){cur=best;dialAng=getAngle(cur);drawDial(dialAng);loadStation(cur)}
+});
+
+function getAngle(i){return(i/STATIONS.length)*Math.PI*2}
+
+dc.addEventListener('mousedown',e=>{
+  isDrag=true;
+  const r=dc.getBoundingClientRect();
+  lastAng=Math.atan2(e.clientY-r.top-60,e.clientX-r.left-60);
+  e.preventDefault();
+});
+window.addEventListener('mousemove',e=>{
+  if(!isDrag)return;
+  const r=dc.getBoundingClientRect();
+  const a=Math.atan2(e.clientY-r.top-60,e.clientX-r.left-60);
+  dialAng+=a-lastAng;lastAng=a;drawDial(dialAng);
+  const ni=Math.round(((dialAng%(Math.PI*2)+Math.PI*2)%(Math.PI*2))/(Math.PI*2)*STATIONS.length)%STATIONS.length;
+  if(ni!==cur){cur=ni;loadStation(cur)}
+});
+window.addEventListener('mouseup',()=>{isDrag=false});
+dc.addEventListener('touchstart',e=>{
+  e.preventDefault();isDrag=true;
+  const r=dc.getBoundingClientRect(),t=e.touches[0];
+  lastAng=Math.atan2(t.clientY-r.top-60,t.clientX-r.left-60);
+},{passive:false});
+window.addEventListener('touchmove',e=>{
+  if(!isDrag)return;
+  const r=dc.getBoundingClientRect(),t=e.touches[0];
+  const a=Math.atan2(t.clientY-r.top-60,t.clientX-r.left-60);
+  dialAng+=a-lastAng;lastAng=a;drawDial(dialAng);
+  const ni=Math.round(((dialAng%(Math.PI*2)+Math.PI*2)%(Math.PI*2))/(Math.PI*2)*STATIONS.length)%STATIONS.length;
+  if(ni!==cur){cur=ni;loadStation(cur)}
+});
+window.addEventListener('touchend',()=>{isDrag=false});
+
+function initAudio(){
+  if(audioCtx)return;
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  gainNode=audioCtx.createGain();
+  gainNode.gain.value=vol;
+  gainNode.connect(audioCtx.destination);
+}
+
+function stopAudio(){
+  activeNodes.forEach(n=>{try{n.stop&&n.stop(0)}catch(e){}});
+  activeNodes=[];
+}
+
+function resumeCtx(){if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
+
+function playStatic(dur=0.5){
+  if(!audioCtx)return;
+  resumeCtx();
+  try{
+    const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*dur,audioCtx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.35;
+    const s=audioCtx.createBufferSource(),g=audioCtx.createGain();
+    s.buffer=buf;
+    g.gain.setValueAtTime(0.5,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+    s.connect(g);g.connect(gainNode);s.start();s.stop(audioCtx.currentTime+dur);
+    activeNodes.push(s);
+  }catch(e){}
+}
+
+function makeJazzLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const chords=[[220,277,330],[247,311,370],[196,247,311],[220,277,330,415]];
+  function playChord(freqs,t,dur){
+    freqs.forEach(f=>{
+      const o=ctx.createOscillator(),gn=ctx.createGain(),filter=ctx.createBiquadFilter();
+      o.frequency.value=f;o.type='triangle';
+      filter.type='lowpass';filter.frequency.value=1200;filter.Q.value=0.8;
+      gn.gain.setValueAtTime(0,t);
+      gn.gain.linearRampToValueAtTime(0.12/freqs.length,t+0.05);
+      gn.gain.exponentialRampToValueAtTime(0.001,t+dur-0.05);
+      o.connect(filter);filter.connect(gn);gn.connect(g);
+      o.start(t);o.stop(t+dur);activeNodes.push(o);
+    });
+    const snare=ctx.createOscillator(),sg=ctx.createGain();
+    snare.frequency.value=180;snare.type='sawtooth';
+    sg.gain.setValueAtTime(0.08,t+dur*0.5);
+    sg.gain.exponentialRampToValueAtTime(0.001,t+dur*0.5+0.08);
+    snare.connect(sg);sg.connect(g);snare.start(t+dur*0.5);snare.stop(t+dur*0.5+0.1);
+    activeNodes.push(snare);
+  }
+  for(let i=0;i<16;i++)playChord(chords[i%chords.length],now+i*0.9,0.8);
+  const nb=ctx.createBufferSource(),buf=ctx.createBuffer(1,ctx.sampleRate*14.4,ctx.sampleRate);
+  const bd=buf.getChannelData(0);
+  for(let i=0;i<bd.length;i++)bd[i]=(Math.random()-0.5)*0.018;
+  nb.buffer=buf;nb.connect(g);nb.start();activeNodes.push(nb);
+}
+
+function makeDinerLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const notes=[262,294,330,349,392,440,494,523];
+  const melody=[0,2,4,2,5,4,2,0,1,3,5,3,6,5,3,1];
+  melody.forEach((n,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=notes[n];o.type='square';
+    gn.gain.setValueAtTime(0,now+i*0.35);
+    gn.gain.linearRampToValueAtTime(0.1,now+i*0.35+0.03);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.35+0.3);
+    o.connect(gn);gn.connect(g);o.start(now+i*0.35);o.stop(now+i*0.35+0.35);activeNodes.push(o);
+  });
+  for(let i=0;i<16;i++){
+    const k=ctx.createOscillator(),kg=ctx.createGain();
+    k.frequency.value=i%4===0?80:i%2===0?100:60;k.type='sine';
+    kg.gain.setValueAtTime(0.12,now+i*0.35);
+    kg.gain.exponentialRampToValueAtTime(0.001,now+i*0.35+0.1);
+    k.connect(kg);kg.connect(g);k.start(now+i*0.35);k.stop(now+i*0.35+0.15);activeNodes.push(k);
+  }
+}
+
+function makeDiscoLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const bassNotes=[98,110,98,110,88,98,88,98];
+  bassNotes.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain(),filt=ctx.createBiquadFilter();
+    o.frequency.value=f;o.type='sawtooth';
+    filt.type='lowpass';filt.frequency.value=300;filt.Q.value=2;
+    gn.gain.setValueAtTime(0.18,now+i*0.45);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.45+0.4);
+    o.connect(filt);filt.connect(gn);gn.connect(g);
+    o.start(now+i*0.45);o.stop(now+i*0.45+0.45);activeNodes.push(o);
+  });
+  for(let i=0;i<16;i++){
+    const hi=ctx.createOscillator(),hg=ctx.createGain();
+    hi.frequency.value=8000+Math.random()*2000;hi.type='sine';
+    hg.gain.setValueAtTime(0.04,now+i*0.225);
+    hg.gain.exponentialRampToValueAtTime(0.001,now+i*0.225+0.05);
+    hi.connect(hg);hg.connect(g);hi.start(now+i*0.225);hi.stop(now+i*0.225+0.06);activeNodes.push(hi);
+  }
+  const chord=[440,554,659,880];
+  chord.forEach(f=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='sine';
+    gn.gain.value=0.06;
+    o.connect(gn);gn.connect(g);o.start(now);o.stop(now+3.6);activeNodes.push(o);
+  });
+}
+
+function makeSynthLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const seq=[130,146,164,130,174,196,174,146];
+  seq.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain(),f2=ctx.createOscillator(),g2=ctx.createGain();
+    o.frequency.value=f;o.type='sawtooth';
+    f2.frequency.value=f*2;f2.type='square';
+    gn.gain.setValueAtTime(0,now+i*0.5);
+    gn.gain.linearRampToValueAtTime(0.12,now+i*0.5+0.02);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.5+0.48);
+    g2.gain.value=0.06;
+    o.connect(gn);f2.connect(g2);gn.connect(g);g2.connect(g);
+    o.start(now+i*0.5);o.stop(now+i*0.5+0.5);activeNodes.push(o);
+    f2.start(now+i*0.5);f2.stop(now+i*0.5+0.5);activeNodes.push(f2);
+  });
+  const pad=[82,103,123];
+  pad.forEach(f=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='sine';
+    gn.gain.value=0.08;
+    o.connect(gn);gn.connect(g);o.start(now);o.stop(now+4);activeNodes.push(o);
+  });
+}
+
+function makeGrungeLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const riff=[82,82,0,82,88,0,82,78];
+  riff.forEach((f,i)=>{
+    if(!f)return;
+    const o=ctx.createOscillator(),gn=ctx.createGain(),dist=ctx.createWaveShaper();
+    const curve=new Float32Array(256);
+    for(let j=0;j<256;j++){const x=j*2/256-1;curve[j]=Math.tanh(x*3)}
+    dist.curve=curve;
+    o.frequency.value=f;o.type='sawtooth';
+    gn.gain.setValueAtTime(0,now+i*0.4);
+    gn.gain.linearRampToValueAtTime(0.15,now+i*0.4+0.01);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.4+0.35);
+    o.connect(dist);dist.connect(gn);gn.connect(g);
+    o.start(now+i*0.4);o.stop(now+i*0.4+0.4);activeNodes.push(o);
+  });
+  for(let i=0;i<8;i++){
+    const s=ctx.createOscillator(),sg=ctx.createGain();
+    s.frequency.value=200;s.type='sawtooth';
+    sg.gain.setValueAtTime(0.08,now+i*0.4*0.5+0.2);
+    sg.gain.exponentialRampToValueAtTime(0.001,now+i*0.4*0.5+0.28);
+    s.connect(sg);sg.connect(g);s.start(now+i*0.4*0.5+0.2);s.stop(now+i*0.4*0.5+0.3);activeNodes.push(s);
+  }
+}
+
+function makeRainLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const buf=ctx.createBuffer(2,ctx.sampleRate*4,ctx.sampleRate);
+  for(let ch=0;ch<2;ch++){
+    const d=buf.getChannelData(ch);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.15;
+  }
+  const nb=ctx.createBufferSource(),filt=ctx.createBiquadFilter();
+  filt.type='bandpass';filt.frequency.value=2000;filt.Q.value=0.3;
+  nb.buffer=buf;nb.loop=true;nb.connect(filt);filt.connect(g);nb.start();activeNodes.push(nb);
+  const piano=[261,330,392,523,659];
+  piano.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='sine';
+    gn.gain.setValueAtTime(0,now+i*1.2);
+    gn.gain.linearRampToValueAtTime(0.06,now+i*1.2+0.1);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*1.2+1.0);
+    o.connect(gn);gn.connect(g);o.start(now+i*1.2);o.stop(now+i*1.2+1.2);activeNodes.push(o);
+  });
+}
+
+function makeAbandonedLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.04*(0.5+0.5*Math.sin(i/ctx.sampleRate*0.3));
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+  const drone=ctx.createOscillator(),dg=ctx.createGain();
+  drone.frequency.value=55;drone.type='sine';dg.gain.value=0.04;
+  drone.connect(dg);dg.connect(g);drone.start(now);drone.stop(now+12);activeNodes.push(drone);
+  for(let i=0;i<5;i++){
+    const b=ctx.createOscillator(),bg=ctx.createGain();
+    b.frequency.value=800;b.type='sine';
+    bg.gain.setValueAtTime(0.08,now+i*2.3);
+    bg.gain.exponentialRampToValueAtTime(0.001,now+i*2.3+0.1);
+    b.connect(bg);bg.connect(g);b.start(now+i*2.3);b.stop(now+i*2.3+0.12);activeNodes.push(b);
+  }
+}
+
+function makeNumbersLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const buf=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.025;
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+  const pattern=[1,0,0,1,1,0,1,0,0,0,1,1];
+  pattern.forEach((on,i)=>{
+    if(!on)return;
+    const o=ctx.createOscillator(),og=ctx.createGain();
+    o.frequency.value=1000;o.type='sine';
+    og.gain.setValueAtTime(0.15,now+i*0.6);
+    og.gain.exponentialRampToValueAtTime(0.001,now+i*0.6+0.18);
+    o.connect(og);og.connect(g);o.start(now+i*0.6);o.stop(now+i*0.6+0.2);activeNodes.push(o);
+  });
+}
+
+function makePirateLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const notes=[330,370,440,370,330,294,330,370];
+  notes.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='square';
+    gn.gain.setValueAtTime(0,now+i*0.5);
+    gn.gain.linearRampToValueAtTime(0.1,now+i*0.5+0.04);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.5+0.45);
+    o.connect(gn);gn.connect(g);o.start(now+i*0.5);o.stop(now+i*0.5+0.5);activeNodes.push(o);
+  });
+  const buf=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.015;
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+}
+
+function makeEmergencyLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  for(let i=0;i<6;i++){
+    const o1=ctx.createOscillator(),o2=ctx.createOscillator(),og=ctx.createGain();
+    o1.frequency.value=853;o2.frequency.value=960;
+    o1.type='square';o2.type='square';
+    og.gain.setValueAtTime(i%2===0?0.12:0,now+i*0.5);
+    og.gain.setValueAtTime(i%2===0?0.12:0,now+i*0.5+0.48);
+    og.gain.setValueAtTime(0,now+i*0.5+0.49);
+    o1.connect(og);o2.connect(og);og.connect(g);
+    o1.start(now+i*0.5);o1.stop(now+i*0.5+0.5);activeNodes.push(o1);
+    o2.start(now+i*0.5);o2.stop(now+i*0.5+0.5);activeNodes.push(o2);
+  }
+}
+
+function makeDeepSeaLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const drone=ctx.createOscillator(),dg=ctx.createGain(),filt=ctx.createBiquadFilter();
+  drone.frequency.value=60;drone.type='sine';dg.gain.value=0.1;
+  filt.type='lowpass';filt.frequency.value=200;
+  drone.connect(filt);filt.connect(dg);dg.connect(g);drone.start(now);drone.stop(now+12);activeNodes.push(drone);
+  for(let i=0;i<8;i++){
+    const p=ctx.createOscillator(),pg=ctx.createGain();
+    p.frequency.value=800+(i%3)*400;p.type='sine';
+    pg.gain.setValueAtTime(0.1,now+i*1.5);
+    pg.gain.exponentialRampToValueAtTime(0.001,now+i*1.5+0.08);
+    p.connect(pg);pg.connect(g);p.start(now+i*1.5);p.stop(now+i*1.5+0.1);activeNodes.push(p);
+  }
+  const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.03*(0.5+0.5*Math.sin(i/ctx.sampleRate*0.2));
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+}
+
+function makeSpaceLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const pads=[55,73,82,110];
+  pads.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='sine';
+    gn.gain.value=0.07;
+    o.connect(gn);gn.connect(g);o.start(now+i*0.5);o.stop(now+10);activeNodes.push(o);
+  });
+  const buf=ctx.createBuffer(1,ctx.sampleRate*6,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.01;
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+  const glitch=ctx.createOscillator(),gg=ctx.createGain();
+  glitch.frequency.setValueAtTime(440,now+3);
+  glitch.frequency.setValueAtTime(0,now+3.05);
+  glitch.type='sine';gg.gain.setValueAtTime(0.08,now+3);gg.gain.setValueAtTime(0,now+3.06);
+  glitch.connect(gg);gg.connect(g);glitch.start(now+2.9);glitch.stop(now+4);activeNodes.push(glitch);
+}
+
+function makeAlienLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const freqs=[237,317,419,559,743];
+  freqs.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.setValueAtTime(f,now+i*0.3);
+    o.frequency.exponentialRampToValueAtTime(f*1.05,now+i*0.3+0.25);
+    o.type='sine';
+    gn.gain.setValueAtTime(0,now+i*0.3);
+    gn.gain.linearRampToValueAtTime(0.08,now+i*0.3+0.05);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.3+0.28);
+    o.connect(gn);gn.connect(g);o.start(now+i*0.3);o.stop(now+i*0.3+0.3);activeNodes.push(o);
+  });
+  const drone=ctx.createOscillator(),dg=ctx.createGain();
+  drone.frequency.value=174;drone.type='sine';dg.gain.value=0.05;
+  drone.connect(dg);dg.connect(g);drone.start(now);drone.stop(now+8);activeNodes.push(drone);
+}
+
+function makeCatsLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const meows=[400,500,600,450,350,500];
+  meows.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.setValueAtTime(f,now+i*1.1);
+    o.frequency.exponentialRampToValueAtTime(f*0.7,now+i*1.1+0.4);
+    o.type='sine';
+    gn.gain.setValueAtTime(0,now+i*1.1);
+    gn.gain.linearRampToValueAtTime(0.12,now+i*1.1+0.08);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*1.1+0.5);
+    o.connect(gn);gn.connect(g);o.start(now+i*1.1);o.stop(now+i*1.1+0.55);activeNodes.push(o);
+  });
+  const purr=ctx.createOscillator(),pg=ctx.createGain();
+  const lfo=ctx.createOscillator(),lg=ctx.createGain();
+  lfo.frequency.value=25;lfo.type='sine';lg.gain.value=30;
+  lfo.connect(lg);lg.connect(purr.frequency);
+  purr.frequency.value=100;purr.type='sawtooth';pg.gain.value=0.04;
+  purr.connect(pg);pg.connect(g);lfo.start(now);purr.start(now);
+  lfo.stop(now+5);purr.stop(now+5);activeNodes.push(purr);activeNodes.push(lfo);
+}
+
+function makeBlackholeLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const sub=ctx.createOscillator(),sg=ctx.createGain();
+  sub.frequency.setValueAtTime(20,now);
+  sub.frequency.linearRampToValueAtTime(18,now+8);
+  sub.type='sine';sg.gain.value=0.15;
+  sub.connect(sg);sg.connect(g);sub.start(now);sub.stop(now+8);activeNodes.push(sub);
+  const mid=ctx.createOscillator(),mg=ctx.createGain();
+  mid.frequency.value=30;mid.type='sine';mg.gain.value=0.07;
+  mid.connect(mg);mg.connect(g);mid.start(now);mid.stop(now+8);activeNodes.push(mid);
+  const buf=ctx.createBuffer(1,ctx.sampleRate*8,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.015;
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.connect(g);nb.start();activeNodes.push(nb);
+}
+
+function makeFutureLoop(){
+  resumeCtx();
+  const ctx=audioCtx,g=gainNode,now=ctx.currentTime;
+  const seq=[523,659,784,1047,784,659,523,440,523,659,784,659];
+  seq.forEach((f,i)=>{
+    const o=ctx.createOscillator(),gn=ctx.createGain();
+    o.frequency.value=f;o.type='sine';
+    gn.gain.setValueAtTime(0,now+i*0.35);
+    gn.gain.linearRampToValueAtTime(0.09,now+i*0.35+0.04);
+    gn.gain.exponentialRampToValueAtTime(0.001,now+i*0.35+0.32);
+    o.connect(gn);gn.connect(g);o.start(now+i*0.35);o.stop(now+i*0.35+0.36);activeNodes.push(o);
+  });
+  const buf=ctx.createBuffer(1,ctx.sampleRate*5,ctx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()-0.5)*0.008;
+  const nb=ctx.createBufferSource();nb.buffer=buf;nb.loop=true;nb.connect(g);nb.start();activeNodes.push(nb);
+}
+
+const AUDIO_FNS={
+  jazz:makeJazzLoop,diner:makeDinerLoop,disco:makeDiscoLoop,synth:makeSynthLoop,
+  grunge:makeGrungeLoop,rain:makeRainLoop,abandoned:makeAbandonedLoop,numbers:makeNumbersLoop,
+  pirate:makePirateLoop,emergency:makeEmergencyLoop,deepsea:makeDeepSeaLoop,space:makeSpaceLoop,
+  alien:makeAlienLoop,cats:makeCatsLoop,blackhole:makeBlackholeLoop,future:makeFutureLoop
+};
+
+function playStation(bg){
+  if(!audioOn)return;
+  stopAudio();
+  playStatic(0.4);
+  setTimeout(()=>{
+    if(AUDIO_FNS[bg]){try{AUDIO_FNS[bg]()}catch(e){console.warn('Audio err:',e)}}
+  },300);
+}
+
+let progVal=0,progDir=1;
+function animProg(){
+  progVal+=progDir*0.3;
+  if(progVal>=100){progDir=-1}
+  if(progVal<=0){progDir=1}
+  document.getElementById('progress').style.width=progVal+'%';
+  requestAnimationFrame(animProg);
+}
+animProg();
+
+let flickerT=null;
+function triggerFlicker(){
+  const fl=document.getElementById('flicker');
+  fl.style.opacity='0.15';
+  clearTimeout(flickerT);
+  flickerT=setTimeout(()=>{fl.style.opacity='0'},100);
+  setTimeout(()=>{fl.style.opacity='0.08'},50);
+}
+setInterval(()=>{if(Math.random()>0.85)triggerFlicker()},2000);
+
+function loadStation(i,play=true){
+  const s=STATIONS[i];
+  document.getElementById('freq-num').textContent=s.freq.toFixed(1);
+  document.getElementById('freq-num').style.color=s.col;
+  document.getElementById('stn-name').textContent=s.name;
+  document.getElementById('stn-name').style.color=s.col;
+  document.getElementById('cat-badge').textContent=s.cat;
+  document.getElementById('rare-pill').style.display=s.rare?'block':'none';
+  document.getElementById('card-title').textContent=s.name;
+  document.getElementById('card-khz').textContent=s.freq.toFixed(1)+' kHz';
+  document.getElementById('card-desc').textContent=s.desc;
+  const tagsEl=document.getElementById('card-tags');
+  tagsEl.innerHTML='';
+  s.tags.forEach(t=>{const sp=document.createElement('span');sp.className='tag';sp.textContent=t;tagsEl.appendChild(sp)});
+  updateSig(s.sig);
+  updateFavStar(i);
+  startBroadcast(i);
+  updateBg(s.bg,s.col);
+  triggerFlicker();
+  if(play)playStation(s.bg);
+}
+
+function startBroadcast(i){
+  clearInterval(bcastTimer);
+  bcastIdx=0;
+  const el=document.getElementById('broadcast');
+  el.textContent=STATIONS[i].lines[0];
+  bcastTimer=setInterval(()=>{
+    bcastIdx=(bcastIdx+1)%STATIONS[i].lines.length;
+    el.style.opacity='0';
+    setTimeout(()=>{el.textContent=STATIONS[i].lines[bcastIdx];el.style.opacity='1'},400);
+  },5500);
+}
+
+function updateFavStar(i){
+  const b=document.getElementById('fav-star');
+  b.className='fav-star'+(favs.includes(i)?' on':'');
+  b.textContent=favs.includes(i)?'♥':'♥';
+}
+
+function renderFavs(){
+  const el=document.getElementById('fav-chips');
+  if(!favs.length){el.innerHTML='<span style="font-size:10px;color:#3a2810">Tap ♥ on any station to save it here</span>';return}
+  el.innerHTML='';
+  favs.forEach(i=>{
+    const c=document.createElement('div');c.className='fav-chip';
+    c.textContent=STATIONS[i].freq.toFixed(0)+' — '+STATIONS[i].name.split('\xb7')[0].trim();
+    c.onclick=()=>{cur=i;dialAng=getAngle(i);drawDial(dialAng);loadStation(i)};
+    el.appendChild(c);
+  });
+}
+
+document.getElementById('fav-star').addEventListener('click',()=>{
+  if(favs.includes(cur))favs=favs.filter(f=>f!==cur);
+  else favs.push(cur);
+  updateFavStar(cur);renderFavs();
+});
+
+document.getElementById('btn-prev').addEventListener('click',()=>{
+  cur=(cur-1+STATIONS.length)%STATIONS.length;
+  dialAng=getAngle(cur);drawDial(dialAng);loadStation(cur);
+});
+document.getElementById('btn-next').addEventListener('click',()=>{
+  cur=(cur+1)%STATIONS.length;
+  dialAng=getAngle(cur);drawDial(dialAng);loadStation(cur);
+});
+document.getElementById('btn-shuffle').addEventListener('click',()=>{
+  cur=Math.floor(Math.random()*STATIONS.length);
+  dialAng=getAngle(cur);drawDial(dialAng);loadStation(cur);
+});
+
+let isScanning=false;
+document.getElementById('btn-scan').addEventListener('click',()=>{
+  isScanning=!isScanning;
+  document.getElementById('btn-scan').classList.toggle('on',isScanning);
+  document.getElementById('btn-scan').textContent=isScanning?'■ STOP SCAN':'⟳ AUTO SCAN';
+  if(isScanning){
+    scanTimer=setInterval(()=>{
+      cur=(cur+1)%STATIONS.length;
+      dialAng=getAngle(cur);drawDial(dialAng);loadStation(cur);
+    },4000);
+  }else{clearInterval(scanTimer)}
+});
+
+document.getElementById('vol').addEventListener('input',e=>{
+  vol=e.target.value/100;
+  if(gainNode)gainNode.gain.setTargetAtTime(vol,audioCtx.currentTime,0.01);
+});
+
+const playBtn=document.getElementById('btn-play');
+playBtn.addEventListener('click',()=>{
+  if(!audioCtx)initAudio();
+  audioOn=!audioOn;
+  playBtn.classList.toggle('on',audioOn);
+  playBtn.textContent=audioOn?'■ AUDIO ON':'▶ PLAY AUDIO';
+  document.getElementById('audio-notice').style.display=audioOn?'none':'flex';
+  if(audioOn){playStation(STATIONS[cur].bg)}
+  else{stopAudio()}
+});
+
+let bgParticles=[];
+function initParticles(type,col){
+  bgParticles=[];
+  const n=type==='disco'?70:type==='rain'?100:type==='alien'||type==='space'||type==='future'||type==='blackhole'?120:50;
+  for(let i=0;i<n;i++){
+    bgParticles.push({
+      x:Math.random()*bgc.width,y:Math.random()*bgc.height,
+      vx:(Math.random()-0.5)*(type==='disco'?3:type==='rain'?0.3:1),
+      vy:type==='rain'?Math.random()*4+1:(Math.random()-0.5)*(type==='disco'?3:0.4),
+      r:Math.random()*(type==='disco'?7:type==='rain'?1.2:2.5)+0.4,
+      a:Math.random(),life:Math.random(),col
+    });
+  }
+}
+
+let bgRAF=null;
+function updateBg(type,col){
+  initParticles(type,col);
+  if(bgRAF)cancelAnimationFrame(bgRAF);
+  (function loop(){
+    bgRAF=requestAnimationFrame(loop);
+    bx.clearRect(0,0,bgc.width,bgc.height);
+    if(type==='synth'){
+      bx.fillStyle='rgba(0,2,14,0.97)';bx.fillRect(0,0,bgc.width,bgc.height);
+      const gw=50;
+      bx.strokeStyle='rgba(0,200,220,0.06)';bx.lineWidth=0.5;
+      for(let x=0;x<bgc.width;x+=gw){bx.beginPath();bx.moveTo(x,0);bx.lineTo(x,bgc.height);bx.stroke()}
+      for(let y=0;y<bgc.height;y+=gw){bx.beginPath();bx.moveTo(0,y);bx.lineTo(bgc.width,y);bx.stroke()}
+    }else if(type==='emergency'){
+      const fl=Math.sin(Date.now()*0.006)>0;
+      bx.fillStyle=fl?'rgba(20,0,0,0.97)':'rgba(6,0,0,0.99)';bx.fillRect(0,0,bgc.width,bgc.height);
+    }else if(type==='blackhole'){
+      bx.fillStyle='rgba(0,0,0,0.99)';bx.fillRect(0,0,bgc.width,bgc.height);
+    }else{
+      const colors={jazz:'rgba(10,5,0,0.96)',diner:'rgba(14,4,4,0.96)',disco:'rgba(4,0,10,0.93)',
+        grunge:'rgba(4,6,2,0.97)',rain:'rgba(2,4,12,0.97)',abandoned:'rgba(6,4,2,0.98)',
+        numbers:'rgba(8,0,0,0.97)',pirate:'rgba(6,4,0,0.97)',deepsea:'rgba(0,2,12,0.97)',
+        space:'rgba(0,0,5,0.98)',alien:'rgba(0,6,4,0.97)',cats:'rgba(8,2,10,0.96)',future:'rgba(2,0,10,0.97)'};
+      bx.fillStyle=colors[type]||'rgba(6,4,2,0.97)';bx.fillRect(0,0,bgc.width,bgc.height);
+    }
+    bgParticles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.life-=0.002;
+      if(type==='rain'){if(p.y>bgc.height){p.y=0;p.x=Math.random()*bgc.width}}
+      else if(p.life<=0||p.x<-10||p.x>bgc.width+10||p.y<-10||p.y>bgc.height+10){
+        p.x=Math.random()*bgc.width;p.y=Math.random()*bgc.height;p.life=Math.random();
+      }
+      bx.save();bx.globalAlpha=p.a*Math.min(p.life,1)*0.65;
+      if(type==='rain'){
+        bx.strokeStyle='rgba(80,120,200,0.5)';bx.lineWidth=0.7;
+        bx.beginPath();bx.moveTo(p.x,p.y);bx.lineTo(p.x-1.5,p.y+14);bx.stroke();
+      }else if(type==='disco'){
+        bx.fillStyle=p.col;bx.fillRect(p.x,p.y,p.r,p.r);
+      }else if(type==='emergency'){
+        bx.fillStyle='rgba(220,40,0,0.7)';bx.beginPath();bx.arc(p.x,p.y,p.r,0,Math.PI*2);bx.fill();
+      }else{
+        bx.fillStyle=p.col;bx.beginPath();bx.arc(p.x,p.y,p.r,0,Math.PI*2);bx.fill();
+      }
+      bx.restore();
+    });
+  })();
+}
+
+loadStation(0,false);
+updateBg(STATIONS[0].bg,STATIONS[0].col);
+</script>
