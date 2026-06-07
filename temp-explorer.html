@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Temperature Explorer — A Journey Through the Extremes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800;900&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #020408;
+  --accent: #00d4ff;
+  --text: #e8f4f8;
+  --temp-color: #00d4ff;
+  --glow: rgba(0,212,255,0.3);
+  --particle-color: 0,212,255;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+  transition: background 1.5s ease;
+  user-select: none;
+}
+
+/* ===== INTRO SCREEN ===== */
+#intro {
+  position: fixed; inset: 0;
+  background: #020408;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 1s ease, transform 1s ease;
+}
+#intro h1 {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #00d4ff, #0080ff, #8000ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  line-height: 1;
+}
+#intro p {
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  color: rgba(232,244,248,0.6);
+  font-family: 'Space Mono', monospace;
+  text-align: center;
+  max-width: 500px;
+  padding: 0 2rem;
+}
+#intro-btn {
+  margin-top: 3rem;
+  padding: 1rem 3rem;
+  background: transparent;
+  border: 2px solid #00d4ff;
+  color: #00d4ff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+#intro-btn:hover {
+  background: #00d4ff;
+  color: #020408;
+  box-shadow: 0 0 40px rgba(0,212,255,0.5);
+}
+.intro-stars { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.intro-star {
+  position:absolute;
+  width:2px; height:2px;
+  background:#fff;
+  border-radius:50%;
+  animation: twinkle 3s infinite;
+}
+@keyframes twinkle {
+  0%,100%{opacity:0.2;} 50%{opacity:1;}
+}
+
+/* ===== MAIN LAYOUT ===== */
+#main { display:none; }
+
+/* ===== FIXED UI ===== */
+#fixed-ui {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Thermometer */
+#thermometer-wrap {
+  position: fixed;
+  right: 2rem; top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  pointer-events: none;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.5rem;
+}
+#thermo-tube {
+  width: 28px;
+  height: min(60vh, 500px);
+  background: rgba(255,255,255,0.08);
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  position: relative;
+  overflow: hidden;
+}
+#thermo-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 0%;
+  background: linear-gradient(to top, #00d4ff, #00d4ff);
+  border-radius: 14px;
+  transition: height 0.5s ease, background 0.5s ease;
+  box-shadow: 0 0 20px var(--glow);
+}
+#thermo-bulb {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--temp-color);
+  box-shadow: 0 0 20px var(--glow);
+  transition: background 0.5s, box-shadow 0.5s;
+}
+#thermo-labels {
+  position: absolute;
+  right: 36px; top: 0; bottom: 0;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.3);
+  white-space: nowrap;
+  padding: 4px 0;
+}
+
+/* Temp display */
+#temp-display {
+  position: fixed;
+  right: 2rem; top: 1.5rem;
+  z-index: 200;
+  text-align: right;
+  pointer-events: none;
+}
+#temp-c {
+  font-family: 'Syne Mono', monospace;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--temp-color);
+  text-shadow: 0 0 20px var(--glow);
+  transition: color 0.5s, text-shadow 0.5s;
+  line-height: 1;
+}
+#temp-f {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+}
+#temp-name {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.5);
+  max-width: 140px;
+  text-align: right;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+/* Audio controls */
+#audio-ctrl {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+  backdrop-filter: blur(10px);
+}
+#mute-btn {
+  background: none; border: none;
+  color: #fff; cursor: pointer;
+  font-size: 1.1rem;
+  transition: opacity 0.3s;
+  pointer-events: all;
+}
+#vol-slider {
+  -webkit-appearance: none;
+  width: 70px; height: 3px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+  outline: none;
+  pointer-events: all;
+  cursor: pointer;
+}
+#vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--temp-color);
+  transition: background 0.5s;
+}
+
+/* Progress / scroll hint */
+#scroll-hint {
+  position: fixed;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.5rem;
+  animation: bounce 2s infinite;
+  pointer-events: none;
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-8px)} }
+
+/* Stage navigation dots */
+#stage-nav {
+  position: fixed;
+  left: 1.5rem; top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex; flex-direction: column;
+  gap: 0.4rem;
+}
+.stage-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+  pointer-events: all;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.stage-dot.active {
+  background: var(--temp-color);
+  box-shadow: 0 0 10px var(--glow);
+  transform: scale(1.3);
+}
+.stage-dot:hover { background: rgba(255,255,255,0.5); transform: scale(1.2); }
+
+/* Global slider */
+#global-slider-wrap {
+  position: fixed;
+  bottom: 1.5rem; left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex; align-items: center;
+  gap: 1rem;
+  pointer-events: all;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.75rem 1.5rem;
+  border-radius: 3rem;
+  backdrop-filter: blur(20px);
+}
+#global-slider {
+  -webkit-appearance: none;
+  width: min(50vw, 400px);
+  height: 4px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(to right, #0066ff 0%, #00d4ff 30%, #ff6600 70%, #ff0000 100%);
+}
+#global-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(255,255,255,0.8);
+  cursor: pointer;
+}
+.slider-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+}
+
+/* ===== STAGES ===== */
+.stage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+/* stage content */
+.stage-content {
+  position: relative;
+  z-index: 10;
+  max-width: 700px;
+  text-align: center;
+}
+.stage-emoji {
+  font-size: clamp(4rem, 10vw, 8rem);
+  display: block;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 30px currentColor);
+  cursor: pointer;
+  transition: transform 0.3s;
+  animation: float 4s ease-in-out infinite;
+}
+.stage-emoji:hover { transform: scale(1.2) rotate(5deg); }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+
+.stage-temp-badge {
+  display: inline-block;
+  font-family: 'Syne Mono', monospace;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 40px currentColor;
+}
+.stage-name {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+.stage-desc {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: rgba(232,244,248,0.7);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  font-family: 'Space Mono', monospace;
+}
+.comparison-tag {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-family: 'Space Mono', monospace;
+  color: rgba(255,255,255,0.6);
+  margin: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.comparison-tag:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* Fun fact card */
+.fact-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  margin-top: 1.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(232,244,248,0.8);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.fact-card::before {
+  content: '💡 FUN FACT';
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+  color: rgba(255,255,255,0.4);
+}
+.fact-card:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Easter egg */
+.easter-egg {
+  position: absolute;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.3s, transform 0.3s;
+  font-size: 2rem;
+  z-index: 20;
+}
+.easter-egg:hover { opacity: 1; transform: scale(1.5) rotate(15deg); }
+
+/* Particle canvas */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===== STAGE SPECIFIC BGs ===== */
+/* Absolute Zero */
+.stage-absz { background: radial-gradient(ellipse at center, #0a0a1a 0%, #020408 100%); }
+/* Nitrogen */
+.stage-n2 { background: radial-gradient(ellipse at center, #0d1a2e 0%, #020a15 100%); }
+/* Antarctic */
+.stage-ant { background: radial-gradient(ellipse at top, #1a3a5c 0%, #0a1825 100%); }
+/* Freezing */
+.stage-frz { background: radial-gradient(ellipse at center, #1a2e45 0%, #0d1a2e 100%); }
+/* Fridge */
+.stage-frg { background: radial-gradient(ellipse at center, #1a2e3a 0%, #0d1d24 100%); }
+/* Room temp */
+.stage-room { background: radial-gradient(ellipse at center, #1a2a1a 0%, #0d1a0d 100%); }
+/* Body temp */
+.stage-body { background: radial-gradient(ellipse at center, #2a1a0d 0%, #1a0d05 100%); }
+/* Boiling */
+.stage-boil { background: radial-gradient(ellipse at bottom, #2a1505 0%, #1a0d02 100%); }
+/* Oven */
+.stage-oven { background: radial-gradient(ellipse at center, #3a1500 0%, #250d00 100%); }
+/* Lava */
+.stage-lava { background: radial-gradient(ellipse at bottom, #4a0000 0%, #200000 100%); }
+/* Lightning */
+.stage-light { background: radial-gradient(ellipse at center, #1a0030 0%, #080010 100%); }
+/* Sun */
+.stage-sun { background: radial-gradient(ellipse at center, #3a2000 0%, #150a00 100%); }
+/* Blue star */
+.stage-bstar { background: radial-gradient(ellipse at center, #00101a 0%, #000510 100%); }
+/* Nuclear */
+.stage-nuke { background: radial-gradient(ellipse at center, #1a0a00 0%, #0a0500 100%); }
+/* Supernova */
+.stage-sn { background: radial-gradient(ellipse at center, #0a0015 0%, #020008 100%); }
+
+/* ===== ANIMATED EFFECTS ===== */
+/* Ice crystals */
+.ice-crystal {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.3;
+  animation: drift linear infinite;
+  font-size: 1.5rem;
+}
+@keyframes drift {
+  from { transform: translateY(-20px) rotate(0deg); opacity:0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* Fire particles */
+.fire-particle {
+  position: absolute;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  pointer-events: none;
+  animation: fire-rise linear infinite;
+}
+@keyframes fire-rise {
+  from { bottom: 0; opacity: 1; }
+  to { bottom: 100%; opacity: 0; transform: rotate(-45deg) scale(0); }
+}
+
+/* Smoke */
+.smoke-puff {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(100,100,100,0.2);
+  pointer-events: none;
+  animation: smoke-rise 4s ease-out infinite;
+}
+@keyframes smoke-rise {
+  from { opacity: 0.5; transform: scale(0.5) translateY(0); }
+  to { opacity: 0; transform: scale(3) translateY(-100px); }
+}
+
+/* Star twinkle */
+.bg-star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--dur, 3s) infinite var(--delay, 0s);
+}
+
+/* Aurora */
+.aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.aurora-band {
+  position: absolute;
+  left: -20%; right: -20%;
+  height: 200px;
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: aurora-wave 8s ease-in-out infinite;
+  opacity: 0.3;
+}
+@keyframes aurora-wave {
+  0%,100%{transform:translateX(-10%) scaleY(1);}
+  50%{transform:translateX(10%) scaleY(1.5);}
+}
+
+/* Lightning bolt */
+.lightning-bolt {
+  position: absolute;
+  pointer-events: none;
+  animation: lightning-flash 0.1s steps(1) infinite;
+  opacity: 0;
+}
+@keyframes lightning-flash {
+  0%{opacity:0;}
+  95%{opacity:0;}
+  97%{opacity:1;}
+  99%{opacity:0;}
+  100%{opacity:0;}
+}
+
+/* Sun glow */
+.sun-glow {
+  position: absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%,100%{transform:translate(-50%,-50%) scale(1);}
+  50%{transform:translate(-50%,-50%) scale(1.08);}
+}
+
+/* Supernova ring */
+.sn-ring {
+  position: absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border: 2px solid;
+  pointer-events:none;
+  animation: expand-ring 3s ease-out infinite;
+  opacity:0;
+}
+@keyframes expand-ring {
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0.8;}
+  100%{transform:translate(-50%,-50%) scale(3);opacity:0;}
+}
+
+/* Popup toast */
+#toast {
+  position: fixed;
+  bottom: 6rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0,0,0,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  max-width: 320px;
+  text-align: center;
+  z-index: 500;
+  opacity: 0;
+  transition: all 0.4s;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  line-height: 1.5;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Matter state badge */
+.matter-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2rem;
+  padding: 0.4rem 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+.matter-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{transform:scale(1);}50%{transform:scale(1.3);} }
+
+/* Clickable objects */
+.clickable-obj {
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-block;
+}
+.clickable-obj:hover { filter: brightness(1.3); }
+.clickable-obj:active { transform: scale(0.9); }
+
+/* ===== SCIENCE BARS ===== */
+.science-bar {
+  width: 100%; max-width: 400px;
+  margin: 0.5rem auto;
+  display: flex; align-items: center;
+  gap: 0.75rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.5);
+}
+.science-bar-label { width: 80px; text-align: right; }
+.science-bar-track {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.science-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+.science-bar-val { width: 40px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  #thermometer-wrap { right: 0.5rem; }
+  #temp-display { right: 0.5rem; top: 1rem; }
+  #stage-nav { display: none; }
+  #global-slider { width: 40vw; }
+  #audio-ctrl { bottom: 5rem; }
+  .stage { padding: 1rem; padding-bottom: 8rem; }
+}
+
+/* ===== CURSOR ===== */
+body { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%2300d4ff' stroke-width='1.5'/%3E%3Ccircle cx='10' cy='10' r='2' fill='%2300d4ff'/%3E%3C/svg%3E") 10 10, crosshair; }
+
+/* Loading shimmer */
+@keyframes shimmer { 0%{background-position:-200px 0} 100%{background-position:200px 0} }
+
+/* Molecule animation */
+.molecule {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: molecule-move linear infinite;
+}
+@keyframes molecule-move {
+  0%{transform:translate(0,0);}
+  25%{transform:translate(30px,-20px);}
+  50%{transform:translate(-10px,40px);}
+  75%{transform:translate(-30px,-10px);}
+  100%{transform:translate(0,0);}
+}
+
+/* Water ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(100,200,255,0.4);
+  animation: ripple-expand 2s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ripple-expand {
+  0%{transform:scale(0);opacity:0.8;}
+  100%{transform:scale(4);opacity:0;}
+}
+
+/* Nuclear mushroom */
+.mushroom-cloud {
+  position: absolute;
+  pointer-events: none;
+  animation: mushroom-grow 3s ease-out forwards;
+}
+@keyframes mushroom-grow {
+  0%{transform:scale(0);opacity:0;}
+  50%{opacity:1;}
+  100%{transform:scale(1);opacity:0.7;}
+}
+
+/* Plasma streams */
+.plasma-stream {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(10px);
+  animation: plasma-orbit linear infinite;
+}
+@keyframes plasma-orbit {
+  from{transform:rotate(0deg) translateX(80px) rotate(0deg);}
+  to{transform:rotate(360deg) translateX(80px) rotate(-360deg);}
+}
+
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-stars" id="introStars"></div>
+  <h1>TEMPERATURE<br>EXPLORER</h1>
+  <p>Journey from absolute zero to the birth of stars. Discover what happens to matter at every extreme.</p>
+  <button id="intro-btn" onclick="startExperience()">BEGIN THE JOURNEY ↓</button>
+</div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- FIXED UI -->
+<div id="fixed-ui">
+  <div id="temp-display">
+    <div id="temp-c">−273°C</div>
+    <div id="temp-f">−459°F</div>
+    <div id="temp-name">Absolute Zero</div>
+  </div>
+</div>
+
+<!-- Thermometer -->
+<div id="thermometer-wrap">
+  <div id="thermo-tube">
+    <div id="thermo-fill"></div>
+    <div id="thermo-labels">
+      <span>☀️</span>
+      <span>🔥</span>
+      <span>💧</span>
+      <span>🌿</span>
+      <span>❄️</span>
+      <span>🔵</span>
+    </div>
+  </div>
+  <div id="thermo-bulb"></div>
+</div>
+
+<!-- Stage nav dots -->
+<div id="stage-nav"></div>
+
+<!-- Global slider -->
+<div id="global-slider-wrap">
+  <span class="slider-label">−273°C</span>
+  <input type="range" id="global-slider" min="0" max="14" step="0.01" value="0">
+  <span class="slider-label">10⁹°C</span>
+</div>
+
+<!-- Audio -->
+<div id="audio-ctrl">
+  <button id="mute-btn" onclick="toggleMute()">🔊</button>
+  <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.3">
+</div>
+
+<!-- SCROLL HINT -->
+<div id="scroll-hint">
+  <span>SCROLL OR DRAG THE SLIDER</span>
+  <svg width="16" height="20" viewBox="0 0 16 20"><path d="M8 0v16M2 10l6 8 6-8" stroke="rgba(255,255,255,0.4)" fill="none" stroke-width="1.5"/></svg>
+</div>
+
+<!-- =============================== STAGES =============================== -->
+
+<!-- 0: ABSOLUTE ZERO -->
+<div class="stage stage-absz" id="stage-0" data-temp="-273" data-name="Absolute Zero">
+  <div class="aurora">
+    <div class="aurora-band" style="top:20%;background:linear-gradient(90deg,#0044ff,#00aaff,#0044ff);"></div>
+    <div class="aurora-band" style="top:50%;background:linear-gradient(90deg,#4400ff,#0044ff,#4400ff);animation-delay:-4s;"></div>
+  </div>
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('🧊 At absolute zero, all atomic motion ceases. Nothing can be colder. Even quantum mechanics barely breathes here.')">❄️</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#00d4ff"></div>BOSE-EINSTEIN CONDENSATE</div>
+    <div class="stage-temp-badge" style="color:#00d4ff">−273.15°C</div>
+    <div class="stage-name">Absolute Zero</div>
+    <div class="stage-desc">The coldest possible temperature. All molecular motion stops. Time itself seems to freeze. No experiment has ever achieved this perfectly — the universe conspires against it.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Pluto\'s surface is a comparatively tropical −229°C. Absolute zero makes Pluto feel warm!')">🪐 Colder than Pluto</span>
+      <span class="comparison-tag" onclick="showToast('Even the cosmic microwave background radiates at 2.7K — warmer than absolute zero!')">🌌 Colder than deep space</span>
+    </div>
+    <div class="fact-card" onclick="showToast('🍌 EASTER EGG: At liquid nitrogen temps, a banana becomes so hard it can drive a nail into wood. The universe\'s most unexpected hammer!')">
+      At absolute zero, quantum tunneling — particles passing through barriers — is the only motion left. Even the vacuum of space is warmer.
+    </div>
+    <div style="margin-top:1rem">
+      <div class="science-bar"><span class="science-bar-label">Entropy</span><div class="science-bar-track"><div class="science-bar-fill" style="width:0%;background:#00d4ff"></div></div><span class="science-bar-val">0</span></div>
+      <div class="science-bar"><span class="science-bar-label">Kinetic E</span><div class="science-bar-track"><div class="science-bar-fill" style="width:0%;background:#0088ff"></div></div><span class="science-bar-val">0 J</span></div>
+    </div>
+  </div>
+  <div class="easter-egg" style="bottom:20%;left:15%;animation-delay:2s" onclick="showToast('🐧 Emperor penguins huddle at −60°C winds — but absolute zero would freeze their atoms solid in an instant!')">🐧</div>
+</div>
+
+<!-- 1: LIQUID NITROGEN -->
+<div class="stage stage-n2" id="stage-1" data-temp="-196" data-name="Liquid Nitrogen">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerN2Effect()">💨</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#88ccff"></div>CRYOGENIC LIQUID</div>
+    <div class="stage-temp-badge" style="color:#88ccff">−196°C</div>
+    <div class="stage-name">Liquid Nitrogen</div>
+    <div class="stage-desc">Nitrogen — the gas making up 78% of our air — transforms into a ghostly, boiling liquid. Exposed skin freezes in seconds. It's used to preserve biological samples, cool superconductors, and make incredibly smooth ice cream.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('A banana dipped in liquid nitrogen becomes hard enough to hammer a nail through wood. The universe\'s most underrated tool! 🍌🔨')">🍌 Banana-hammer territory</span>
+      <span class="comparison-tag" onclick="showToast('Liquid nitrogen boils at room temperature — you can see it actively evaporating the moment it touches anything warm!')">💨 Boils at room temp</span>
+    </div>
+    <div class="fact-card" onclick="showToast('🌹 A rose dipped in liquid nitrogen shatters like glass when dropped. A reminder that beauty is fragile at any temperature.')">
+      Superconductors work near this temperature — materials that conduct electricity with zero resistance, defying normal physics.
+    </div>
+  </div>
+  <div class="easter-egg" style="top:25%;right:15%" onclick="showToast('🍦 Fancy restaurants use liquid nitrogen to make instant ice cream tableside. Michelin stars and cryogenics: a match made in heaven.')">🍦</div>
+</div>
+
+<!-- 2: ANTARCTIC WINTER -->
+<div class="stage stage-ant" id="stage-2" data-temp="-89" data-name="Antarctic Record">
+  <div class="aurora">
+    <div class="aurora-band" style="top:10%;background:linear-gradient(90deg,#004400,#00aa44,#004400);"></div>
+    <div class="aurora-band" style="top:35%;background:linear-gradient(90deg,#004444,#0044aa,#004444);animation-delay:-3s;"></div>
+  </div>
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('❄️ Vostok Station, Antarctica, July 21, 1983. The coldest temperature ever recorded on Earth\'s surface: −89.2°C. The researchers survived in heated bunkers!')">🏔️</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#aaddff"></div>SOLID ICE WORLD</div>
+    <div class="stage-temp-badge" style="color:#aaddff">−89°C</div>
+    <div class="stage-name">Antarctic Record</div>
+    <div class="stage-desc">The coldest naturally occurring temperature recorded on Earth's surface. At Vostok Station, Antarctica. Exposed skin freezes in under a minute. Steel becomes brittle as glass.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Mars average temperature is −60°C — warmer than the worst Antarctic days! Mars is practically a beach destination compared to Vostok in winter.')">🔴 Colder than Mars average</span>
+      <span class="comparison-tag" onclick="showToast('At this temperature, diesel fuel thickens and vehicle engines need special arctic-grade oil to function at all.')">🚗 Cars refuse to start</span>
+    </div>
+    <div class="fact-card" onclick="showToast('Scientists in Antarctica sometimes throw boiling water into the −60°C air and it instantly vaporizes into a cloud — the Mpemba effect made visible!')">
+      The Aurora Australis dances above Vostok Station in winter. In the crushing darkness and cold, it's one of the most spectacular natural sights on Earth.
+    </div>
+  </div>
+</div>
+
+<!-- 3: FREEZING WATER -->
+<div class="stage stage-frz" id="stage-3" data-temp="0" data-name="Freezing Point">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerIceEffect()">🧊</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#cceeff"></div>PHASE TRANSITION</div>
+    <div class="stage-temp-badge" style="color:#cceeff">0°C</div>
+    <div class="stage-name">Freezing Point</div>
+    <div class="stage-desc">Water reaches its magical threshold. Liquid becomes solid. Molecules lock into hexagonal lattices. Ice expands — one of the universe's rarest quirks — which is why frozen pipes burst and ice floats.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Ice floats because water expands when freezing — 9% larger. If ice sank, Earth\'s oceans would be frozen from the bottom up, and life might never have started!')">🌊 Ice floats (rare!)</span>
+      <span class="comparison-tag" onclick="showToast('Salt lowers water\'s freezing point to −21°C. That\'s why we salt roads in winter — and why the ocean doesn\'t freeze as easily.')">🧂 Salt prevents ice</span>
+    </div>
+    <div class="fact-card" onclick="showToast('No two snowflakes are identical — each one traces a unique path through the atmosphere where temperature and humidity vary infinitely. Your own personal snowflake is out there somewhere.')">
+      Water is one of the only substances that expands when freezing. This oddity makes life on Earth possible — ice acts as insulation, protecting liquid water beneath.
+    </div>
+  </div>
+</div>
+
+<!-- 4: REFRIGERATOR -->
+<div class="stage stage-frg" id="stage-4" data-temp="4" data-name="Your Refrigerator">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('🦠 At 4°C, bacterial growth slows to a crawl. Your fridge buys you days, not centuries — bacteria are just napping, not dead!')">🧊</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#88ffcc"></div>CHILLED — SLOW BIOLOGY</div>
+    <div class="stage-temp-badge" style="color:#88ffcc">4°C</div>
+    <div class="stage-name">Your Refrigerator</div>
+    <div class="stage-desc">The humble fridge. Bacteria survive but reproduce excruciatingly slowly. Food spoilage slows by 50% for every 8°C drop. Your leftover pizza gets a second chance at life.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('E. coli doubles every 20 minutes at room temperature but takes hours at fridge temp. Your fridge is a time machine for food!')">🦠 Bacteria in slow motion</span>
+      <span class="comparison-tag" onclick="showToast('Deep-sea temperatures average 4°C — the same as your refrigerator. Polar bears effectively live in a giant natural fridge!')">🐻‍❄️ Like the deep ocean</span>
+    </div>
+    <div class="fact-card" onclick="showToast('The first mechanical refrigerator was invented in 1834 by Jacob Perkins. Before that, people harvested lake ice in winter and stored it in insulated ice houses all year.')">
+      Most bacteria double every 20 minutes at room temperature. At 4°C, it takes several hours. Your fridge isn't eliminating bacteria — it's putting them in slow motion.
+    </div>
+  </div>
+  <div class="easter-egg" style="bottom:30%;left:20%" onclick="showToast('🥒 Fun fact: Cucumbers are damaged by refrigerator temperatures! They prefer 10-12°C. Your fridge is slowly killing your cucumbers.')">🥒</div>
+</div>
+
+<!-- 5: ROOM TEMPERATURE -->
+<div class="stage stage-room" id="stage-5" data-temp="20" data-name="Room Temperature">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('🌿 The Goldilocks zone of temperature. Not too hot, not too cold. Perfect for photosynthesis, chemistry, coffee, and contemplation.')">🌿</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#88ffaa"></div>THE GOLDILOCKS ZONE</div>
+    <div class="stage-temp-badge" style="color:#88ffaa">20°C</div>
+    <div class="stage-name">Room Temperature</div>
+    <div class="stage-desc">The sweet spot of human civilization. Chemical reactions proceed at moderate speeds. Water flows freely. Life thrives. The entire edifice of human technology is optimized for this narrow band.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Only a 0.1% difference in Earth\'s distance from the Sun separates us from a frozen or boiling world. We\'re extraordinarily lucky.')">🌍 Earth's lucky distance</span>
+      <span class="comparison-tag" onclick="showToast('Silicon computer chips are designed to operate at 20-85°C. Your PC is literally most comfortable at room temperature — just like you!')">💻 Perfect for computers</span>
+    </div>
+    <div class="fact-card" onclick="showToast('The ideal wine-serving temperature varies: whites at 8-12°C, reds at 16-18°C. Temperature affects which aromatic compounds evaporate, changing the taste entirely.')">
+      Room temperature is where most of Earth's chemistry happens — digestion, photosynthesis, combustion, and the reactions inside every living cell.
+    </div>
+  </div>
+</div>
+
+<!-- 6: HUMAN BODY -->
+<div class="stage stage-body" id="stage-6" data-temp="37" data-name="Human Body">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('❤️ 37°C is so critical to human biology that a 2°C rise causes hallucinations and a 4°C rise can be fatal. You are a very precisely calibrated machine.')">🫀</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ffaa88"></div>BIOLOGICAL OPTIMUM</div>
+    <div class="stage-temp-badge" style="color:#ffaa88">37°C</div>
+    <div class="stage-name">Human Body</div>
+    <div class="stage-desc">Every enzyme in your body is tuned to perform optimally at exactly 37°C. Drift 2°C higher and you hallucinate. Fall 2°C lower and you're hypothermic. You are a remarkably precise thermal machine.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('A fever of 40°C triggers the immune system into overdrive — it\'s your body deliberately heating itself to kill pathogens that can\'t survive the warmth. Clever!')">🤒 Fever kills germs</span>
+      <span class="comparison-tag" onclick="showToast('Newborn babies can\'t regulate their own temperature for weeks. That\'s why human babies need to be held — skin-to-skin contact is thermal regulation!')">👶 Babies need warmth</span>
+    </div>
+    <div class="fact-card" onclick="showToast('The human body generates about 80 watts of heat at rest — the same as an old-fashioned light bulb. At full exertion, that can hit 1,000 watts. You are literally a space heater.')">
+      Your body burns about 2,000 calories per day just staying at 37°C — even while sleeping. Maintaining temperature is your body's single biggest energy expense.
+    </div>
+    <div style="margin-top:1rem">
+      <div class="science-bar"><span class="science-bar-label">Metabolism</span><div class="science-bar-track"><div class="science-bar-fill" style="width:40%;background:#ff8844"></div></div><span class="science-bar-val">+35%</span></div>
+      <div class="science-bar"><span class="science-bar-label">Enzymes</span><div class="science-bar-track"><div class="science-bar-fill" style="width:90%;background:#ffaa44"></div></div><span class="science-bar-val">Peak</span></div>
+    </div>
+  </div>
+  <div class="easter-egg" style="top:20%;right:10%" onclick="showToast('🦔 Hedgehogs hibernate at 2°C body temperature, slowing their heart to 1 beat per minute. You\'d be clinically dead at that temperature.')">🦔</div>
+</div>
+
+<!-- 7: BOILING WATER -->
+<div class="stage stage-boil" id="stage-7" data-temp="100" data-name="Boiling Water">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerBoilEffect()">💧</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#aaccff"></div>PHASE TRANSITION — STEAM</div>
+    <div class="stage-temp-badge" style="color:#aaccff">100°C</div>
+    <div class="stage-name">Boiling Water</div>
+    <div class="stage-desc">Water's second great transformation. Liquid molecules break free from each other's grip and escape into vapor. The Maillard reaction — responsible for browning food — begins around this temperature, creating thousands of flavor compounds.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('On Mount Everest\'s peak, lower air pressure drops water\'s boiling point to 70°C. Tea brewed there tastes distinctly different — too cool to extract full flavor!')">🏔️ Boils at 70°C on Everest</span>
+      <span class="comparison-tag" onclick="showToast('Steam at 100°C carries 5x more heat energy than liquid water at 100°C. That\'s why steam burns are so much more severe than hot water burns!')">💨 Steam burns worse</span>
+    </div>
+    <div class="fact-card" onclick="showToast('The sound of boiling water changes pitch as it heats — you can actually hear when water is about to boil before you see it. Ancient tea masters used this to judge water temperature by sound alone.')">
+      Water at 100°C can sterilize most bacteria and viruses — the basis of all autoclaving and pressure cooking. Heat is humanity's oldest disinfectant.
+    </div>
+  </div>
+</div>
+
+<!-- 8: OVEN / FIRE -->
+<div class="stage stage-oven" id="stage-8" data-temp="260" data-name="Kitchen Oven">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('🍕 Neapolitan pizza must be cooked at exactly 485°C for exactly 90 seconds in a wood-fired oven. Anything cooler and the crust doesn\'t develop that characteristic char and chew.')">🔥</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ff8844"></div>MAILLARD REACTION ZONE</div>
+    <div class="stage-temp-badge" style="color:#ff8844">260°C</div>
+    <div class="stage-name">Kitchen Oven</div>
+    <div class="stage-desc">The realm of cooking. The Maillard reaction — named after a French chemist — creates hundreds of flavor compounds when proteins and sugars react. Everything delicious about roasted, baked, and grilled food happens here.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Paper burns at 233°C — that\'s where the famous Fahrenheit 451 title comes from (451°F = 233°C). Ray Bradbury was scientifically accurate!')">📄 Paper burns at 233°C</span>
+      <span class="comparison-tag" onclick="showToast('Wood ignites at around 300°C — but can smolder and char at lower temperatures for hours before catching flame. Spontaneous combustion is real!')">🪵 Wood ignites at 300°C</span>
+    </div>
+    <div class="fact-card" onclick="showToast('The Maillard reaction between amino acids and sugars creates over 1000 different flavor compounds. The science of deliciousness is extraordinarily complex. Chefs are essentially chemists.')">
+      Self-cleaning ovens reach 450-500°C, incinerating food residue to ash. At that temperature, the oven door locks automatically — for very good reason.
+    </div>
+  </div>
+</div>
+
+<!-- 9: LAVA -->
+<div class="stage stage-lava" id="stage-9" data-temp="1200" data-name="Volcanic Lava">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerLavaEffect()">🌋</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ff4400"></div>MOLTEN ROCK</div>
+    <div class="stage-temp-badge" style="color:#ff4400">1,200°C</div>
+    <div class="stage-name">Volcanic Lava</div>
+    <div class="stage-desc">Rock itself melts. Lava flows at walking pace — slow enough to outrun, fast enough to swallow entire villages. At this temperature, glass softens, copper melts, and iron approaches its melting point.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Lava is essentially liquid rock — the same material that makes up Earth\'s crust, just hot enough to flow. Earth\'s surface is a thin shell over a planet of molten stone.')">🪨 Melted rock</span>
+      <span class="comparison-tag" onclick="showToast('A cubic meter of lava weighs about 2,800 kg — far too dense to sink in. People who fall into lava don\'t sink; they land on top. Mercifully, exposure at that range is fatal almost instantly.')">⚖️ Dense as stone</span>
+    </div>
+    <div class="fact-card" onclick="showToast('Ötzi the Iceman\'s copper axe — 5,300 years old — required smelting copper at 1,085°C. Our Bronze Age ancestors figured out that fire could melt rocks. That insight built civilization.')">
+      The Hawaiian word 'a'ā describes chunky, jagged lava, while pāhoehoe is smooth and ropy. The difference comes from cooling rate — both start identical but move differently.
+    </div>
+  </div>
+</div>
+
+<!-- 10: LIGHTNING -->
+<div class="stage stage-light" id="stage-10" data-temp="30000" data-name="Lightning Bolt">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerLightningEffect()">⚡</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ffffff"></div>PLASMA CHANNEL</div>
+    <div class="stage-temp-badge" style="color:#ffffff">30,000°C</div>
+    <div class="stage-name">Lightning Bolt</div>
+    <div class="stage-desc">Five times hotter than the surface of the Sun. A lightning bolt heats its channel of air so rapidly that it expands faster than sound — that shockwave is thunder. In that instant, nitrogen in the air fuses into fertilizer compounds.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Lightning creates around 2 billion pounds of nitrogen fertilizer per year, deposited in rain. Before synthetic fertilizers, lightning was literally growing the world\'s crops!')">🌱 Creates fertilizer</span>
+      <span class="comparison-tag" onclick="showToast('Earth is struck by lightning 100 times per second — 8.6 million times per day. You are perpetually surrounded by a constant, planet-wide electrical storm.')">⚡ 100 strikes/second</span>
+    </div>
+    <div class="fact-card" onclick="showToast('Glass tubes called fulgurites are created when lightning strikes sand — the bolt melts and fuses the sand grains into a glassy fossil of the lightning\'s path. You can dig one up yourself!')">
+      The odds of being struck by lightning in your lifetime are about 1 in 15,000. Roy Sullivan survived being struck SEVEN times between 1942-1977. He became known as "The Human Lightning Rod."
+    </div>
+  </div>
+</div>
+
+<!-- 11: SURFACE OF THE SUN -->
+<div class="stage stage-sun" id="stage-11" data-temp="5500" data-name="Surface of the Sun">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerSunEffect()">☀️</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ffdd44"></div>STELLAR PHOTOSPHERE</div>
+    <div class="stage-temp-badge" style="color:#ffdd44">5,500°C</div>
+    <div class="stage-name">Surface of the Sun</div>
+    <div class="stage-desc">The photosphere — the Sun's visible surface — is a boiling ocean of plasma. Every element we know exists here in ionized form. The Sun fuses 600 million tons of hydrogen into helium every second, releasing energy that took 100,000 years to escape from the core.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Sunlight takes 8 minutes to reach Earth, but took between 10,000 and 170,000 years to travel from the Sun\'s core to its surface first. The photon you\'re seeing right now started its journey before humans existed.')">☀️ Light is ancient</span>
+      <span class="comparison-tag" onclick="showToast('The Sun\'s corona — the halo visible during eclipses — reaches 2 million°C. Scientists still don\'t fully understand why it\'s 300x hotter than the surface beneath it.')">🌟 Corona is hotter!</span>
+    </div>
+    <div class="fact-card" onclick="showToast('About 1 million Earths could fit inside the Sun. And yet the Sun is a perfectly average, unremarkable star. There are stars 1,000 times larger. The universe is terrifyingly vast.')">
+      The Sun has been burning for 4.6 billion years and has enough fuel for another 5 billion. When it runs out, it will expand into a red giant, engulfing Mercury, Venus, and possibly Earth.
+    </div>
+  </div>
+</div>
+
+<!-- 12: BLUE STAR -->
+<div class="stage stage-bstar" id="stage-12" data-temp="40000" data-name="Blue Giant Star">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="showToast('🌟 The blue color of Rigel and Sirius isn\'t artifice — hotter objects emit bluer light. Blue stars are the universe\'s most powerful thermonuclear furnaces, burning through fuel so fast they may last only millions of years.')">⭐</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#4488ff"></div>CLASS O STAR</div>
+    <div class="stage-temp-badge" style="color:#4488ff">40,000°C</div>
+    <div class="stage-name">Blue Giant Star</div>
+    <div class="stage-desc">The hottest, most luminous stars in the universe. They burn so furiously that they last only a few million years — a cosmic eyeblink compared to our Sun's 10-billion-year lifespan. Rigel, Sirius, and Eta Carinae are examples.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('Eta Carinae emits 5 million times more light than our Sun. If it replaced our Sun, Earth\'s atmosphere would be stripped away within days. We are very fortunate to have a boring, average star.')">💥 5M× brighter than Sun</span>
+      <span class="comparison-tag" onclick="showToast('Blue stars are expected to end as spectacular supernovae — creating neutron stars or black holes. Every atom heavier than iron in your body was forged in such an explosion.')">💀 Lives fast, dies hard</span>
+    </div>
+    <div class="fact-card" onclick="showToast('All carbon in your body was fused in a star smaller than our Sun. All iron in your blood was forged in a supernova. All gold in your jewelry required a neutron star collision. You are cosmically expensive.')">
+      Elements heavier than hydrogen and helium exist only because stars forge them through nuclear fusion. Every atom in your body — except hydrogen — was born inside a star.
+    </div>
+  </div>
+</div>
+
+<!-- 13: NUCLEAR EXPLOSION -->
+<div class="stage stage-nuke" id="stage-13" data-temp="100000000" data-name="Nuclear Detonation">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerNukeEffect()">☢️</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ff8800"></div>NUCLEAR FIREBALL</div>
+    <div class="stage-temp-badge" style="color:#ff8800">100,000,000°C</div>
+    <div class="stage-name">Nuclear Detonation</div>
+    <div class="stage-desc">A thermonuclear weapon detonates at temperatures exceeding 100 million degrees — 18,000 times hotter than the Sun's surface. For a fraction of a second, it creates conditions similar to the first moments after the Big Bang.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('The Tsar Bomba — the most powerful nuclear weapon ever detonated (1961) — created a fireball 8km across. The shockwave circled the globe three times. The mushroom cloud reached 67km high.')">💣 Tsar Bomba</span>
+      <span class="comparison-tag" onclick="showToast('Nuclear fusion — the reaction in the Sun — produces 4x more energy per unit of mass than nuclear fission. We\'ve been trying to harness fusion for 70 years. We\'re almost there.')">⚛️ 18,000× Sun surface</span>
+    </div>
+    <div class="fact-card" onclick="showToast('EASTER EGG 🐣: The atomic bombing of Hiroshima released energy equivalent to 21,000 tons of TNT in about a millionth of a second. The largest conventional bomb releases that in a tenth of a second. Time scale matters enormously in explosions.')">
+      The Trinity test in 1945 fused desert sand into green glass called trinitite. Scientists retrieved samples for study. Today, pieces sell as unusual collector's items.
+    </div>
+  </div>
+</div>
+
+<!-- 14: SUPERNOVA -->
+<div class="stage stage-sn" id="stage-14" data-temp="1000000000" data-name="Supernova Core">
+  <div class="stage-content">
+    <span class="stage-emoji clickable-obj" onclick="triggerSupernovaEffect()">💫</span>
+    <div class="matter-state"><div class="matter-dot" style="background:#ff44ff"></div>THE END OF EVERYTHING</div>
+    <div class="stage-temp-badge" style="color:#ff44ff">1,000,000,000°C</div>
+    <div class="stage-name">Supernova Core</div>
+    <div class="stage-desc">A massive star's final moment. Its core — exhausted of fuel — collapses in less than a second. The resulting shockwave tears the star apart, briefly outshining an entire galaxy. In that moment, all heavy elements are forged and scattered across space.</div>
+    <div>
+      <span class="comparison-tag" onclick="showToast('A supernova briefly outshines its entire galaxy — 100 billion stars — for days or weeks. From Earth, it would appear brighter than the full Moon. The last one visible to the naked eye was in 1987.')">🌌 Outshines a galaxy</span>
+      <span class="comparison-tag" onclick="showToast('The gold in your jewelry was created when two neutron stars collided. The event releases more energy in a second than our Sun will in its entire lifetime. You are wearing a neutron star.')">💍 Your gold came from here</span>
+    </div>
+    <div class="fact-card" onclick="showToast('ULTIMATE EASTER EGG 🌟: If the nearest known candidate for a supernova (Betelgeuse, 700 light-years away) exploded, it would cast shadows at night and be visible in daytime for weeks. Astronomers expect this within the next 100,000 years. Maybe tomorrow. Maybe tonight.')">
+      The Crab Nebula is the remnant of a supernova witnessed by Chinese astronomers on July 4, 1054. For 23 days, it was visible in broad daylight. Today, its pulsar spins 30 times per second.
+    </div>
+    <div style="margin-top:1rem;font-family:'Space Mono',monospace;font-size:0.7rem;color:rgba(255,100,255,0.6);line-height:1.6;text-align:center">
+      You have reached the edge of the temperature scale.<br>
+      Every atom in your body was born in moments like this.<br>
+      <span style="color:#ff44ff">You are stardust.</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end #main -->
+
+<script>
+// =============================== DATA ===============================
+const stages = [
+  { temp: -273, name: "Absolute Zero", color: "#00d4ff", glow: "rgba(0,212,255,0.4)", bg: "#020408" },
+  { temp: -196, name: "Liquid Nitrogen", color: "#88ccff", glow: "rgba(136,204,255,0.4)", bg: "#020a15" },
+  { temp: -89,  name: "Antarctic Record", color: "#aaddff", glow: "rgba(170,221,255,0.3)", bg: "#0a1825" },
+  { temp: 0,    name: "Freezing Point", color: "#cceeff", glow: "rgba(200,238,255,0.3)", bg: "#0d1a2e" },
+  { temp: 4,    name: "Refrigerator", color: "#88ffcc", glow: "rgba(136,255,204,0.3)", bg: "#0d1d24" },
+  { temp: 20,   name: "Room Temp", color: "#aaffaa", glow: "rgba(170,255,170,0.3)", bg: "#0d1a0d" },
+  { temp: 37,   name: "Human Body", color: "#ffaa88", glow: "rgba(255,170,136,0.4)", bg: "#1a0d05" },
+  { temp: 100,  name: "Boiling Water", color: "#aaccff", glow: "rgba(170,204,255,0.3)", bg: "#0a1020" },
+  { temp: 260,  name: "Kitchen Oven", color: "#ff8844", glow: "rgba(255,136,68,0.5)", bg: "#1a0800" },
+  { temp: 1200, name: "Volcanic Lava", color: "#ff4400", glow: "rgba(255,68,0,0.5)", bg: "#1a0000" },
+  { temp: 30000,name: "Lightning Bolt", color: "#ffffff", glow: "rgba(255,255,255,0.6)", bg: "#080010" },
+  { temp: 5500, name: "Sun Surface", color: "#ffdd44", glow: "rgba(255,221,68,0.5)", bg: "#150a00" },
+  { temp: 40000,name: "Blue Giant Star", color: "#4488ff", glow: "rgba(68,136,255,0.5)", bg: "#000510" },
+  { temp: 1e8,  name: "Nuclear Fireball", color: "#ff8800", glow: "rgba(255,136,0,0.5)", bg: "#0a0500" },
+  { temp: 1e9,  name: "Supernova Core", color: "#ff44ff", glow: "rgba(255,68,255,0.5)", bg: "#020008" },
+];
+
+let currentStage = 0;
+let sliderVal = 0;
+let isMuted = false;
+let audioCtx = null;
+let currentAudioNode = null;
+let gainNode = null;
+let volume = 0.3;
+
+// =============================== INTRO ===============================
+function makeIntroStars() {
+  const c = document.getElementById('introStars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'intro-star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;
+      width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;
+      animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    c.appendChild(s);
+  }
+}
+makeIntroStars();
+
+function startExperience() {
+  const intro = document.getElementById('intro');
+  intro.style.opacity = '0';
+  intro.style.transform = 'scale(1.05)';
+  setTimeout(() => {
+    intro.style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    initAudio();
+    setupScrollObserver();
+    setupStageDots();
+    setupParticles();
+    initSlider();
+    document.getElementById('scroll-hint').style.display = 'flex';
+  }, 1000);
+}
+
+// =============================== STAGE DOTS ===============================
+function setupStageDots() {
+  const nav = document.getElementById('stage-nav');
+  stages.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'stage-dot' + (i === 0 ? ' active' : '');
+    d.title = s.name;
+    d.onclick = () => goToStage(i);
+    nav.appendChild(d);
+  });
+}
+
+function updateDots(idx) {
+  document.querySelectorAll('.stage-dot').forEach((d,i)=>{
+    d.classList.toggle('active', i===idx);
+    d.style.background = i===idx ? stages[idx].color : '';
+  });
+}
+
+// =============================== SCROLL OBSERVER ===============================
+function setupScrollObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio > 0.5) {
+        const idx = parseInt(e.target.id.split('-')[1]);
+        setStage(idx);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stage').forEach(s => observer.observe(s));
+}
+
+// =============================== STAGE TRANSITIONS ===============================
+function goToStage(idx) {
+  document.getElementById('stage-'+idx).scrollIntoView({behavior:'smooth'});
+}
+
+function setStage(idx) {
+  if (idx === currentStage) return;
+  currentStage = idx;
+  const s = stages[idx];
+  updateTempDisplay(s);
+  updateThermometer(idx);
+  updateDots(idx);
+  updateSliderFromStage(idx);
+  updateBackground(s);
+  updateAudio(idx);
+  // update CSS vars
+  document.documentElement.style.setProperty('--temp-color', s.color);
+  document.documentElement.style.setProperty('--glow', s.glow);
+  // update vol slider thumb
+  document.getElementById('vol-slider').style.setProperty('--tc', s.color);
+}
+
+function updateBackground(s) {
+  document.body.style.background = s.bg;
+}
+
+// =============================== TEMP DISPLAY ===============================
+function updateTempDisplay(s) {
+  const cel = s.temp;
+  const fahr = (cel * 9/5) + 32;
+  document.getElementById('temp-c').textContent = formatTemp(cel) + '°C';
+  document.getElementById('temp-f').textContent = formatTemp(fahr) + '°F';
+  document.getElementById('temp-name').textContent = s.name;
+  document.getElementById('temp-c').style.color = s.color;
+  document.getElementById('temp-c').style.textShadow = `0 0 20px ${s.glow}`;
+  document.getElementById('thermo-bulb').style.background = s.color;
+  document.getElementById('thermo-bulb').style.boxShadow = `0 0 20px ${s.glow}`;
+}
+
+function formatTemp(t) {
+  if (Math.abs(t) >= 1e9) return (t/1e9).toFixed(1) + 'B';
+  if (Math.abs(t) >= 1e6) return (t/1e6).toFixed(1) + 'M';
+  if (Math.abs(t) >= 1e3) return (t/1e3).toFixed(1) + 'k';
+  return Math.round(t).toString();
+}
+
+// =============================== THERMOMETER ===============================
+function updateThermometer(idx) {
+  const pct = (idx / (stages.length - 1)) * 100;
+  const fill = document.getElementById('thermo-fill');
+  fill.style.height = pct + '%';
+  const s = stages[idx];
+  fill.style.background = `linear-gradient(to top, ${s.color}, ${s.color})`;
+  fill.style.boxShadow = `0 0 20px ${s.glow}`;
+}
+
+// =============================== GLOBAL SLIDER ===============================
+function initSlider() {
+  const sl = document.getElementById('global-slider');
+  sl.addEventListener('input', () => {
+    const idx = Math.round(parseFloat(sl.value));
+    goToStage(idx);
+  });
+}
+
+function updateSliderFromStage(idx) {
+  document.getElementById('global-slider').value = idx;
+}
+
+// =============================== PARTICLES ===============================
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function setupParticles() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+  createParticles();
+  animateParticles();
+}
+
+function createParticles() {
+  particles = [];
+  const count = Math.min(60, window.innerWidth / 20);
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random()-0.5) * 0.5,
+      vy: (Math.random()-0.5) * 0.5,
+      r: Math.random() * 2 + 0.5,
+      alpha: Math.random() * 0.4 + 0.1,
+      life: Math.random(),
+    });
+  }
+}
+
+function animateParticles() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const s = stages[currentStage];
+  // parse color
+  const col = s.color;
+
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life += 0.002;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width) p.x = 0;
+    if (p.y < 0) p.y = canvas.height;
+    if (p.y > canvas.height) p.y = 0;
+    const a = p.alpha * Math.abs(Math.sin(p.life));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = col + Math.round(a*255).toString(16).padStart(2,'0');
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+
+// =============================== AUDIO ===============================
+function initAudio() {
+  // We use Web Audio API to synthesize sounds — no external files needed
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = volume;
+    gainNode.connect(audioCtx.destination);
+    document.getElementById('vol-slider').addEventListener('input', (e) => {
+      volume = parseFloat(e.target.value);
+      if (!isMuted && gainNode) gainNode.gain.value = volume;
+    });
+    updateAudio(0);
+  } catch(e) { console.log('Audio not available'); }
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  document.getElementById('mute-btn').textContent = isMuted ? '🔇' : '🔊';
+  if (gainNode) gainNode.gain.value = isMuted ? 0 : volume;
+}
+
+let audioInterval = null;
+function updateAudio(idx) {
+  if (!audioCtx) return;
+  if (currentAudioNode) {
+    try { currentAudioNode.stop(); } catch(e){}
+    currentAudioNode = null;
+  }
+  if (audioInterval) clearInterval(audioInterval);
+  // Generate ambient tone based on stage
+  playAmbience(idx);
+}
+
+function playAmbience(idx) {
+  if (!audioCtx || isMuted) return;
+  const freqs = [40, 55, 65, 80, 90, 110, 130, 150, 180, 220, 280, 260, 300, 350, 400];
+  const freq = freqs[idx] || 100;
+  const types = ['sine','sine','sawtooth','sine','sine','sine','sine','triangle','sawtooth','sawtooth','square','sine','sawtooth','sawtooth','sine'];
+  
+  try {
+    const osc = audioCtx.createOscillator();
+    const oscGain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 300 + idx * 50;
+    osc.type = types[idx] || 'sine';
+    osc.frequency.value = freq;
+    oscGain.gain.value = 0.05;
+    osc.connect(filter);
+    filter.connect(oscGain);
+    oscGain.connect(gainNode);
+    osc.start();
+    currentAudioNode = osc;
+    // LFO for modulation
+    const lfo = audioCtx.createOscillator();
+    const lfoGain = audioCtx.createGain();
+    lfo.frequency.value = idx < 5 ? 0.3 : idx < 10 ? 1 : 3;
+    lfoGain.gain.value = idx * 2;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+    lfo.start();
+  } catch(e) {}
+}
+
+// =============================== TOAST ===============================
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// =============================== STAGE EFFECTS ===============================
+function triggerN2Effect() {
+  showToast('💨 Liquid nitrogen boiling violently! At -196°C, any moisture in the air instantly condenses into dramatic white fog clouds.');
+  // spawn smoke puffs
+  const stage = document.getElementById('stage-1');
+  for (let i=0;i<8;i++) {
+    const p = document.createElement('div');
+    p.className='smoke-puff';
+    p.style.cssText=`width:${60+Math.random()*80}px;height:${60+Math.random()*80}px;
+      left:${20+Math.random()*60}%;bottom:${10+Math.random()*30}%;
+      animation-delay:${Math.random()*2}s;animation-duration:${3+Math.random()*2}s;
+      background:rgba(200,230,255,0.2);`;
+    stage.appendChild(p);
+    setTimeout(()=>p.remove(),6000);
+  }
+}
+
+function triggerIceEffect() {
+  showToast('🧊 Water molecules are locking into a hexagonal crystal lattice! Each water molecule forms exactly 4 hydrogen bonds — nature\'s perfect architecture.');
+  const stage = document.getElementById('stage-3');
+  const crystals = ['❄','✦','⬡','❅'];
+  for (let i=0;i<10;i++) {
+    const c = document.createElement('div');
+    c.className='ice-crystal';
+    c.textContent=crystals[Math.floor(Math.random()*crystals.length)];
+    c.style.cssText=`left:${Math.random()*90}%;animation-duration:${5+Math.random()*5}s;
+      animation-delay:${Math.random()*3}s;font-size:${1+Math.random()*2}rem;color:#aaddff;`;
+    stage.appendChild(c);
+    setTimeout(()=>c.remove(),10000);
+  }
+}
+
+function triggerBoilEffect() {
+  showToast('💧 Water molecules are breaking free! At 100°C, thermal energy overcomes the hydrogen bonds holding liquid water together. Steam is born!');
+  const stage = document.getElementById('stage-7');
+  for (let i=0;i<6;i++) {
+    const r = document.createElement('div');
+    r.className='ripple';
+    r.style.cssText=`width:30px;height:30px;position:absolute;
+      left:${30+Math.random()*40}%;bottom:${10+Math.random()*20}%;
+      animation-delay:${Math.random()*2}s;animation-duration:${1.5+Math.random()}s;`;
+    stage.appendChild(r);
+    setTimeout(()=>r.remove(),5000);
+  }
+}
+
+function triggerLavaEffect() {
+  showToast('🌋 Rock is melting! Silicon dioxide — the basis of most rock — liquefies at these temperatures. Earth\'s crust is just a thin shell over a planet of this stuff.');
+  const stage = document.getElementById('stage-9');
+  for (let i=0;i<5;i++) {
+    const p = document.createElement('div');
+    p.style.cssText=`position:absolute;width:${8+Math.random()*12}px;height:${20+Math.random()*30}px;
+      background:radial-gradient(ellipse,#ff6600,#ff2200);border-radius:50% 50% 20% 20%;
+      left:${10+Math.random()*80}%;bottom:${5+Math.random()*15}%;
+      animation:fire-rise ${0.5+Math.random()*1}s linear infinite;pointer-events:none;`;
+    stage.appendChild(p);
+    setTimeout(()=>p.remove(),4000);
+  }
+}
+
+function triggerLightningEffect() {
+  showToast('⚡ 30,000°C in a microsecond! The superheated air expands at 10x the speed of sound, creating the shockwave we call thunder. Light arrives first at 300,000 km/s.');
+  const stage = document.getElementById('stage-10');
+  for (let i=0;i<3;i++) {
+    setTimeout(()=>{
+      stage.style.backgroundColor='rgba(255,255,255,0.3)';
+      setTimeout(()=>stage.style.backgroundColor='',80);
+    },i*150);
+  }
+}
+
+function triggerSunEffect() {
+  showToast('☀️ 600 million tons of hydrogen fused into helium every second. The energy takes 100,000 years to escape the core — but only 8 minutes to reach Earth.');
+  const stage = document.getElementById('stage-11');
+  const g = document.createElement('div');
+  g.className='sun-glow';
+  g.style.cssText=`width:300px;height:300px;background:radial-gradient(circle,rgba(255,220,50,0.3),transparent);pointer-events:none;`;
+  stage.appendChild(g);
+  setTimeout(()=>g.remove(),5000);
+}
+
+function triggerNukeEffect() {
+  showToast('☢️ For a millionth of a second, conditions match the first moments after the Big Bang. The fireball expands faster than sound, creating a massive pressure wave. Nuclear physics — humanity\'s most dangerous discovery.');
+  const stage = document.getElementById('stage-13');
+  // flash
+  for (let i=0;i<4;i++) {
+    setTimeout(()=>{
+      stage.style.background='rgba(255,200,100,0.5)';
+      setTimeout(()=>stage.style.background='',60);
+    },i*100);
+  }
+  // rings
+  for (let i=0;i<3;i++) {
+    setTimeout(()=>{
+      const r=document.createElement('div');
+      r.className='sn-ring';
+      r.style.cssText=`width:80px;height:80px;border-color:#ff8800;`;
+      stage.appendChild(r);
+      setTimeout(()=>r.remove(),3500);
+    },i*400);
+  }
+}
+
+function triggerSupernovaEffect() {
+  showToast('💫 In less than one second, the stellar core collapses from the size of Earth to a 20km sphere. The rebounding shockwave tears the star apart in the most violent event since the Big Bang. YOU ARE STARDUST.');
+  const stage = document.getElementById('stage-14');
+  // multi-flash
+  for (let i=0;i<6;i++) {
+    setTimeout(()=>{
+      const intensity = i<3?0.6:0.3;
+      stage.style.background=`rgba(255,100,255,${intensity})`;
+      setTimeout(()=>stage.style.background='',40);
+    },i*80);
+  }
+  // expanding rings
+  for (let i=0;i<5;i++) {
+    setTimeout(()=>{
+      const r=document.createElement('div');
+      r.className='sn-ring';
+      r.style.cssText=`width:100px;height:100px;border-color:#ff44ff;`;
+      stage.appendChild(r);
+      setTimeout(()=>r.remove(),4000);
+    },i*600);
+  }
+}
+
+// =============================== KEYBOARD NAV ===============================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    if (currentStage < stages.length-1) goToStage(currentStage+1);
+  }
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    if (currentStage > 0) goToStage(currentStage-1);
+  }
+  if (e.key === 'm' || e.key === 'M') toggleMute();
+});
+
+// =============================== FIRE BACKGROUND ELEMENTS ===============================
+function addStageDecorations() {
+  // Add background stars to cold stages
+  [0,1,2,12].forEach(idx=>{
+    const stage = document.getElementById('stage-'+idx);
+    for(let i=0;i<30;i++){
+      const s=document.createElement('div');
+      s.className='bg-star';
+      const size=Math.random()*2+0.5;
+      s.style.cssText=`width:${size}px;height:${size}px;
+        left:${Math.random()*100}%;top:${Math.random()*100}%;
+        --dur:${2+Math.random()*4}s;--delay:${Math.random()*3}s;`;
+      stage.appendChild(s);
+    }
+  });
+}
+
+// =============================== INIT ===============================
+window.addEventListener('load', ()=>{
+  addStageDecorations();
+  updateTempDisplay(stages[0]);
+  updateThermometer(0);
+  // Intercept clicks on fact cards  
+  document.querySelectorAll('.fact-card').forEach(fc=>{
+    fc.addEventListener('mouseenter',()=>{ fc.style.borderColor=stages[currentStage].color; });
+    fc.addEventListener('mouseleave',()=>{ fc.style.borderColor=''; });
+  });
+});
+
+// hide scroll hint after first scroll
+window.addEventListener('scroll',()=>{
+  document.getElementById('scroll-hint').style.opacity='0';
+},{ once:true });
+
+</script>
+</body>
+</html>
