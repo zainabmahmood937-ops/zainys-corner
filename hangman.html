@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hangman Clean</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #e6fbff, #f2fff6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.game {
+    width: 520px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    text-align: center;
+}
+
+pre {
+    text-align: left;
+    background: #f6f6f6;
+    padding: 12px;
+    border-radius: 12px;
+    height: 200px;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.word {
+    font-size: 28px;
+    letter-spacing: 6px;
+    margin: 15px 0;
+}
+
+.letters {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 5px;
+}
+
+button {
+    padding: 7px;
+    border: none;
+    border-radius: 6px;
+    background: #dff6ff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:disabled {
+    background: #ccc;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.category {
+    font-size: 14px;
+    opacity: 0.75;
+    margin-bottom: 8px;
+}
+
+.restart {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #c7f9ff;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+    <h2>🎯 Hangman</h2>
+
+    <div class="category" id="category"></div>
+
+    <pre id="hang"></pre>
+
+    <div class="word" id="word"></div>
+
+    <div class="status" id="status"></div>
+
+    <div class="letters" id="letters"></div>
+
+    <button class="restart" onclick="reset()">Restart</button>
+</div>
+
+<script>
+
+/* =========================
+   WORDS (MORE + CLEAN)
+========================= */
+const categories = {
+    Animals: ["elephant","giraffe","dolphin","cheetah","penguin","tiger","lion"],
+    Countries: ["pakistan","japan","brazil","germany","canada","turkey","egypt"],
+    Tech: ["computer","internet","software","hardware","keyboard","network","browser"],
+    Space: ["galaxy","planet","asteroid","nebula","comet","universe","rocket"],
+    School: ["physics","chemistry","biology","history","geography","algebra"]
+};
+
+let word = "";
+let category = "";
+let guessed = [];
+let wrong = 0;
+
+/* =========================
+   CLEAN HANGMAN (6 STEPS ONLY)
+========================= */
+const stages = [
+`
+   +------+
+   |      |
+   |      
+   |      
+   |      
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |      
+   |      
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |      |
+   |      |
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |     /|
+   |      |
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |     /|\\
+   |      |
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |     /|\\
+   |     / 
+   |
+=========
+`,
+
+`
+   +------+
+   |      |
+   |      O
+   |     /|\\
+   |     / \\
+   |
+=========
+💀 GAME OVER
+`
+];
+
+/* ========================= */
+const hangEl = document.getElementById("hang");
+const wordEl = document.getElementById("word");
+const lettersEl = document.getElementById("letters");
+const statusEl = document.getElementById("status");
+const categoryEl = document.getElementById("category");
+
+/* ========================= */
+function pickWord(){
+    const keys = Object.keys(categories);
+    category = keys[Math.floor(Math.random()*keys.length)];
+
+    const list = categories[category];
+    word = list[Math.floor(Math.random()*list.length)];
+
+    categoryEl.textContent = "Category: " + category;
+}
+
+/* ========================= */
+function updateWord(){
+    wordEl.textContent = word
+        .split("")
+        .map(l => guessed.includes(l) ? l : "_")
+        .join(" ");
+}
+
+/* ========================= */
+function updateHang(){
+    hangEl.textContent = stages[wrong];
+}
+
+/* ========================= */
+function checkWin(){
+    if(word.split("").every(l => guessed.includes(l))){
+        statusEl.textContent = "🎉 You Win!";
+    }
+}
+
+/* ========================= */
+function checkLose(){
+    if(wrong >= 6){
+        statusEl.textContent = "💀 You Lost! Word: " + word;
+    }
+}
+
+/* ========================= */
+function guess(letter){
+    if(guessed.includes(letter) || wrong >= 6) return;
+
+    guessed.push(letter);
+
+    if(!word.includes(letter)){
+        wrong++;
+    }
+
+    updateWord();
+    updateHang();
+    checkWin();
+    checkLose();
+    renderLetters();
+}
+
+/* ========================= */
+function renderLetters(){
+    lettersEl.innerHTML = "";
+
+    "abcdefghijklmnopqrstuvwxyz".split("").forEach(l=>{
+        const btn = document.createElement("button");
+        btn.textContent = l;
+        btn.disabled = guessed.includes(l) || wrong >= 6;
+        btn.onclick = () => guess(l);
+        lettersEl.appendChild(btn);
+    });
+}
+
+/* ========================= */
+function reset(){
+    guessed = [];
+    wrong = 0;
+    statusEl.textContent = "";
+
+    pickWord();
+    updateWord();
+    updateHang();
+    renderLetters();
+}
+
+/* keyboard */
+document.addEventListener("keydown", e=>{
+    const l = e.key.toLowerCase();
+    if(l.match(/[a-z]/)) guess(l);
+});
+
+/* start */
+reset();
+
+</script>
+
+</body>
+</html>
